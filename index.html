@@ -2517,9 +2517,9 @@ function step(dt) {
 
   if (S.groggy > 0) S.groggy -= dt;
   if (S.lid > 0.8) { S.sleep = Math.max(0, S.sleep - P.sleepDown * dt); S.sleepTime += dt; S.wasClosed = true; }   // 睡眠時間（チャレンジ用）
-  if (S.lid < P.caughtLid) S.awakeTime += dt;   // 起きていた時間（スコア）
   else if (S.boss && (S.boss.stage === 'stand' || S.boss.stage === 'rei')) {}   // 「起立！」〜「着席」の間は眠気がたまらない
   else S.sleep = Math.min(100, S.sleep + sleepRate() * dt);
+  if (S.lid < P.caughtLid) S.awakeTime += dt;   // 起きていた時間（スコア）
   if (S.wasClosed && S.lid < P.caughtLid) { S.wasClosed = false; S.lastOpenAt = S.t; }   // 目を開けた瞬間（セーフ判定に使う）
 
   // 話している最中に目を閉じると、そこから先が聞き取れなくなる
