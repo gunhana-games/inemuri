@@ -223,6 +223,11 @@
   #qChoices button { font-family: inherit; font-size: 19px; font-weight: bold; padding: 11px 10px; border-radius: 12px; border: 3px solid #222; background: #fff; color: #222; cursor: pointer; }
   #qChoices button:hover { background: #fff6d6; }
   #qChoices button.ok { background: #8fe0a0; }
+  /* 答えた結果：問題の欄の真ん中に、ハンコのように大きく出す（欄の外だと重なって見えないことがあるため） */
+  #qResult { position: absolute; left: 50%; top: 42%; z-index: 3; transform: translate(-50%, -50%) rotate(-6deg); padding: 4px 22px; border: 5px solid; border-radius: 14px; background: rgba(255,255,255,.94); font-size: 36px; font-weight: 900; white-space: nowrap; pointer-events: none; display: none; }
+  #qResult.ok { display: block; color: #2a8a3a; border-color: #2a8a3a; }
+  #qResult.ng { display: block; color: #c8322a; border-color: #c8322a; }
+  #qResult small { display: block; font-size: 15px; text-align: center; }
   #qChoices button.noted::after { content: "✎ノート"; margin-left: 6px; padding: 0 5px; border-radius: 4px; background: #3b6fd0; color: #fff; font-size: 12px; vertical-align: 2px; }
   #qChoices button.ng { background: #ff9a9a; }
   #qExtra { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-bottom: 10px; }
@@ -392,6 +397,7 @@
 <div id="hint">長押し（スペースキー）で目を閉じる</div>
 
 <div id="quiz" class="ui hidden">
+  <div id="qResult"></div>
   <div id="qHead"><span id="qSub">数学</span><div id="qTimer"><div id="qTimerFill"></div></div></div>
   <div id="qPrompt" class="qtext"></div>
   <div id="qExtra"></div>
@@ -1615,6 +1621,7 @@ function startQuiz() {
   }
   const sl = S.sleep;
   const quiz = el('quiz');
+  el('qResult').className = '';
   // 眠いほど、字がにじんで二重に見える
   quiz.style.setProperty('--b', (Math.max(0, (sl - 30) / 70) * 2.6).toFixed(2) + 'px');
   quiz.style.setProperty('--dv', (Math.max(0, (sl - 45) / 55) * 6).toFixed(1) + 'px');
@@ -1699,6 +1706,12 @@ function answer(i) {
   if (!c.correct) btns[i].classList.add('ng');
   finishQuiz(!!c.correct, c.sleepy ? `「${c.text}」と答えた` : Q.cause(c.text), c.text);
 }
+// 答えた結果を、問題の欄の中に大きく出す
+function showQResult(ok, text, sub) {
+  const r = el('qResult');
+  r.innerHTML = esc(text) + (sub ? `<small>${esc(sub)}</small>` : '');
+  r.className = ok ? 'ok' : 'ng';
+}
 function finishQuiz(ok, cause, myLine) {
   if (Q.done) return;
   Q.done = true;
@@ -1712,7 +1725,7 @@ function finishQuiz(ok, cause, myLine) {
   // 抜き打ち小テスト中は、1問ずつ次へ進む
   if (S.test) {
     S.test.n++;
-    if (ok) sfxOk(); else { sfxNg(); S.test.wrong++; S.test.cause = cause; }
+    if (ok) { sfxOk(); showQResult(true, '正解！'); } else { sfxNg(); S.test.wrong++; S.test.cause = cause; showQResult(false, 'ちがう……'); }
     later(1.0, () => {
       el('quiz').classList.add('hidden');
       if (S.test.n < 3) { startQuiz(); return; }
@@ -1734,13 +1747,13 @@ function finishQuiz(ok, cause, myLine) {
   if (ok) {
     sfxOk();
     S.sleep = Math.max(0, S.sleep - P.wakeOnCorrect);
-    floatText('正解！ ドキッとして目が覚めた');
+    showQResult(true, '正解！', 'ドキッとして目が覚めた');
     say('……よし、正解だ', speakerName());
   } else if (S.forgive) {
     // チャンス：先生の機嫌がいいので、1回だけ許してもらえる
     S.forgive = false;
     sfxNg();
-    floatText('まちがえた……けど、許してもらえた！', 2.4);
+    showQResult(true, 'セーフ……', 'まちがえたけど、許してもらえた');
     say('まあ、今日は許してやる', speakerName());
   } else {
     sfxNg();
@@ -1748,7 +1761,7 @@ function finishQuiz(ok, cause, myLine) {
     S.lastCause = cause;
     teacher.setMood('angry');
     turnHeads(true);
-    floatText('くすくす……');
+    showQResult(false, 'ちがう……', 'くすくす……');
     say(S.misses >= P.maxMiss ? 'お前、ずっと寝てただろ' : '……ちゃんと聞いてたか？', speakerName());
     updateMisses();
   }
