@@ -181,7 +181,7 @@
   #eyeLid { position: absolute; left: 0; right: 0; top: 0; height: 0; background: #efcfae; border-bottom: 3px solid #222; }
   #gauge { position: relative; flex: 1; width: 34px; border-radius: 999px; border: 3px solid #fff; background: rgba(20,16,12,.55); overflow: hidden; box-shadow: 0 3px 0 rgba(0,0,0,.35); }
   #gaugeFill { position: absolute; left: 0; right: 0; bottom: 0; height: 0; border-radius: 999px; background: linear-gradient(0deg, #8fd3ff, #b48cff 55%, #ff5f7e); }
-  #gaugeLine { position: absolute; bottom: 70%; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.85); }
+  #gaugeLine { position: absolute; bottom: 80%; left: 0; right: 0; height: 3px; background: rgba(255,255,255,.85); }
   #gaugeText { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); writing-mode: vertical-rl; color: #fff; font-size: 14px; font-weight: 900; letter-spacing: 3px; text-shadow: 0 0 3px #000, 0 0 3px #000; }
   #gaugeNum { min-width: 40px; padding: 1px 6px; border-radius: 10px; background: rgba(20,16,12,.75); border: 2px solid #fff; color: #fff; font-size: 18px; font-weight: 900; text-align: center; }
   #sleepBox.danger #gaugeNum { background: #ff5f7e; }
@@ -225,10 +225,11 @@
   #qChoices button.ok { background: #8fe0a0; }
   #qChoices button.noted::after { content: "✎ノート"; margin-left: 6px; padding: 0 5px; border-radius: 4px; background: #3b6fd0; color: #fff; font-size: 12px; vertical-align: 2px; }
   #qChoices button.ng { background: #ff9a9a; }
-  #qExtra { display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-bottom: 10px; }
+  #qExtra { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-bottom: 10px; }
   #qExtra:empty { display: none; }
   .beaker { width: 90px; height: 110px; border: 4px solid #222; border-top: none; border-radius: 0 0 18px 18px; position: relative; overflow: hidden; background: rgba(255,255,255,.6); }
   .beaker .liquid { position: absolute; left: 0; right: 0; bottom: 0; height: 70%; }
+  .labCount { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-size: 44px; font-weight: 900; color: #c8322a; text-shadow: 0 0 6px #fff, 0 0 6px #fff, 0 0 10px #fff; pointer-events: none; }
   .legend { font-size: 12px; line-height: 1.8; text-align: left; }
   .legend i { display: inline-block; width: 14px; height: 14px; border: 2px solid #222; border-radius: 4px; vertical-align: -3px; margin-right: 4px; }
   /* 社会の写真問題（教科書の写真っぽく、白いフチをつけて少しかたむける） */
@@ -314,6 +315,17 @@
   #mini .pot b { position: absolute; left: 0; right: 0; background: rgba(60,170,80,.25); border-top: 2px dashed #2a8a3a; border-bottom: 2px dashed #2a8a3a; }
   #mini .court { position: relative; width: 120px; height: 180px; margin: 0 auto; border-left: 3px solid #222; border-right: 3px solid #222; background: linear-gradient(#cfe8ff, #fff); }
   #mini .court .ball { position: absolute; left: 50%; width: 30px; height: 30px; margin-left: -15px; border-radius: 50%; background: #fff; border: 3px solid #222; box-shadow: inset -5px -5px 0 #ffd75e; }
+  #mini .court .zone { position: absolute; left: 0; right: 0; background: rgba(255,215,94,.35); border-top: 2px dashed #e0a020; border-bottom: 2px dashed #e0a020; }
+  #mini .court .ball.in { background: #ffd75e; box-shadow: 0 0 14px #ffb000; }
+  #mini .panRow { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 13px; font-weight: 900; }
+  #mini .panTrack { position: relative; flex: 1; height: 50px; }
+  #mini .yakisoba { position: absolute; top: 8px; width: 74px; height: 34px; margin-left: -37px; border-radius: 17px; background: #e3b46a; border: 3px solid #222; }
+  #mini .yakisoba::before { content: ""; position: absolute; left: 6px; right: 6px; top: -9px; height: 16px; border-radius: 8px 8px 4px 4px; border: 2px solid #222; background: repeating-linear-gradient(115deg, #7a3e16 0 4px, #b5652a 4px 8px); }
+  #mini .yakisoba::after { content: ""; position: absolute; left: 22px; top: -11px; width: 8px; height: 6px; border-radius: 3px; background: #e4344a; box-shadow: 16px 2px 0 #e4344a; }
+  #mini .curryRow { display: flex; justify-content: center; align-items: flex-end; gap: 16px; }
+  #mini .plate { position: relative; width: 130px; height: 70px; border-radius: 50%; background: #fff; border: 3px solid #222; box-shadow: inset 0 -6px 0 #ddd; }
+  #mini .plate .rice { position: absolute; left: 12%; top: 22%; width: 56%; height: 52%; border-radius: 50%; background: #fffdf2; border: 2px solid #e8e2cc; }
+  #mini .plate .roux { position: absolute; right: 10%; top: 50%; transform: translateY(-50%); border-radius: 50%; background: #b5651d; max-width: 80%; max-height: 70%; }
   #mini .court .hand { position: absolute; left: 10px; right: 10px; height: 14px; border-radius: 7px; background: #efcfae; border: 3px solid #222; }
   #award { position: absolute; left: 50%; top: 68%; z-index: 8; pointer-events: none; transform: translateX(-50%); padding: 8px 18px; background: #fbf7ea; color: #2a2520; border: 3px solid #c8322a; border-radius: 6px; box-shadow: 0 4px 0 rgba(0,0,0,.3); font-size: 18px; font-weight: 900; text-align: center; white-space: nowrap; opacity: 0; }
   #award b { display: inline-block; margin-left: 6px; color: #c8322a; font-size: 26px; }
@@ -434,7 +446,7 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=2"></script>
+<script src="scenes.js?v=3"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
 const TITLE = '睡眠学習';
@@ -449,13 +461,13 @@ const P = {
   lessonSec: 60,          // 1時限の長さ（秒）
   sleepStart: 20,         // 始めの眠気
   sleepUp: 5.5,           // 目を開けているとき、1秒に増える眠気（時限が進むと増える）
-  sleepUpGrow: 0.07,      // 1時限ごとに増える割合
+  tempoGrow: 0.05,        // テンポ：1時限ごとに、眠気のたまる速さ・目を閉じたときに下がる速さ・先生やイベントの進む速さが、これだけ（倍）速くなる。上限なし
   easyPeriods: 1,         // 最初の何時限をやさしくするか（1限だけ。2限からクセのある先生やフェイントが出る）
   easyMul: 0.8,           // やさしい時限の眠気のたまりやすさ
   sleepDown: 24,          // 目を閉じているとき、1秒に減る眠気
   boardMin: 2.8, boardMax: 5.5,   // 先生が黒板を向いている時間（秒）
   warnSec: 1.4,           // 振り向く前の予兆の長さ（秒）。後半の「ゴホン」は最後の0.5秒
-  warnMin: 1.0,           // 予兆はこれより短くしない
+  warnRealMin: 0.55,      // テンポが上がっても、振り向く前の予兆は、実際の時間でこれ（秒）より短くしない（反応できる長さ）
   faceMin: 1.4, faceMax: 2.6,     // 先生がこっちを見ている時間（秒）
   feintRate: 0.15,        // 予兆だけで振り向かない確率（時限が進むと増える）
   caughtLid: 0.55,        // これ以上まぶたが閉じていたら「寝ている」
@@ -464,6 +476,11 @@ const P = {
   quizSec: 6,             // 問題に答える時間（眠いと短くなる）
   wakeOnCorrect: 15,      // 正解するとドキッとして下がる眠気
   callGap: 10,            // 指名と指名の間は最低何秒あけるか
+  callsGrowEvery: 5,      // この時限ごとに、1時限に当てられる回数が1回増える
+  callGapMin: 5,          // 指名と指名の間の、いちばん短いとき（秒）
+  eventsGrowEvery: 6,     // この時限ごとに、1時限に起きるイベント（ピンチ・チャンス・にぎやかし）が1つ増える
+  eventsMax: 4,           // 1時限に起きるイベントの最大
+  listenPer6: [2, 3],     // 「さっき言ったこと、覚えてるか？」の問題は、6時限に2〜3回まで（ずっと同じ）
   callsFirst: 2,          // 1限に当てられる回数
   callsRate: [[2, 0.2], [3, 0.5], [4, 0.3]],   // 2限から、1時限に当てられる回数とその割合（2回2割・3回5割・4回3割）
   talkMin: 4.5, talkMax: 7.5,     // 先生が話す間隔（秒）
@@ -493,18 +510,11 @@ const P = {
   drinkWake: 35,          // コーヒーを飲むと下がる眠気
   cafSec: 20,             // 飲んでから眠気がたまりにくい時間（秒）
   suspectMul: 0.6,        // 保健室で休んだ授業の、先生が黒板を向いている時間（短いほどよく振り向く）
-  minBoardGap: 1.5,
-  sleepUpMaxMul: 1.8,
-  // 終盤（rampFrom 限から）は、1限ごとに少しずつ難しくなり続ける。ただし last の値より易しい所では止める
-  rampFrom: 16,
-  lateSleepGrow: 0.02,    // 眠気のたまり方の倍率が、1限ごとにこれだけ増える
-  lateBoardShrink: 0.02,  // 黒板を向いている時間の下限が、1限ごとにこれだけ（秒）短くなる
-  boardMinLast: 1.0, boardMaxLast: 1.9,
-  lateWarnShrink: 0.006,  // 予兆の長さが、1限ごとにこれだけ（秒）短くなる
-  warnLast: 0.8,     // 時限が進んでも、眠気のたまり方はこの倍率まで（上手に寝れば続けられるように）
-  boardMinFloor: 1.5, boardMaxFloor: 2.6,   // 先生が黒板を向いている時間の、いちばん短いとき（秒）
+  dangerAt: 80,           // 眠気がこれをこえると、ゲージが赤く点滅し、勝手にまぶたが落ちてくる（警告）
+  minBoardGap: 1.5,       // 先生が黒板を向いたら、最低これだけは振り向かない（先生の時間。テンポで実際は短くなる）
+  boardMinFloor: 1.5, boardMaxFloor: 2.6,   // 先生が黒板を向いている時間の、いちばん短いとき（先生の時間）
   roundMinGain: 30,       // 一周を始めてよいのは、眠気がまだ（95 − これ）以下のとき
-  standWake: 25,          // 「起立！」で立つと下がる眠気       // 先生が黒板を向いたら、最低これだけ（秒）は振り向かない
+  standWake: 25,          // 「起立！」で立つと下がる眠気
   eventMaxSleep: 60,      // 眠気がこれより高いときは、イベントを少し待つ
   faceMaxSleep: 50,       // 先生がこっちを向いている間にたまる眠気の上限（これを超える前に必ず黒板に戻る）
   beakerRate: 0.25,       // 理科で実験の問題が出る確率（2回続けては出ない）
@@ -523,6 +533,7 @@ const P = {
   miniReady: 1.0,         // ミニゲームの「よーい」の長さ（秒）
   panSec: 3, panRivalMin: 6.5, panRivalMax: 8.5,   // 焼きそばパン：連打の時間（秒）と、ライバルが1秒に押す回数
   currySpeed: 45, curryZone: [58, 76],             // カレー：ルーがたまる速さと、ちょうどいい範囲（%）
+  panRivalUp: 0.9, curryUp: 12, curryZoneMin: 9, volleyFaster: 0.85,   // ミニゲームを遊ぶたびに：ライバルが速く・ルーが速く範囲がせまく・ボールが速く
   volleyFall: [1.0, 0.85, 0.7], volleyWindow: 0.13,   // バレー：ボールが落ちてくる時間（秒）と、レシーブできる幅
   dropSec: 8,             // 目薬のあと、視界がにじむ時間（秒）
   fullMul: 1.15,          // 早弁したあとの授業の、眠気のたまりやすさ
@@ -533,6 +544,7 @@ const P = {
   roundPeekRate: 0.5,     // 後ろで立ち止まって、のぞき込む確率
   roundStopWarn: 1.0,     // 足音が止まってから、のぞき込むまで（秒）
   roundPeekSec: 1.2,      // 後ろからのぞき込んでいる時間（秒）
+  labReady: 3,            // 理科の実験の最初のカウントダウン（秒）
   walkHold: 1.0,          // 歩き回る先生が、机の横で見下ろす時間（秒）
   walkTurnRate: 0.35,     // 帰り道で振り返る確率
   walkTurnWarn: 1.1,      // 振り返る前に足音が止まってから、振り返るまで（秒）    // 先生が黒板を向いてから何秒たったら、肖像画の見張りを始めてよいか
@@ -1153,16 +1165,20 @@ function sleepRate() {
   const warm = S.warmT > 0 ? P.warmMul : 1, lull = S.lullT > 0 ? P.lullMul : 1;   // ピンチ：ぽかぽか陽気・子守唄のような音読
   const full = S.full ? P.fullMul : 1;                                              // 早弁して満腹
   const gum = S.gum ? P.gumMul : 1;                                                 // ガムを噛んでいる
-  return P.sleepUp * (Math.min(P.sleepUpMaxMul, 1 + diff() * P.sleepUpGrow) + lateDiff() * P.lateSleepGrow) * groggy * easy * coffee * warm * lull * full * gum;
+  return P.sleepUp * tempo() * groggy * easy * coffee * warm * lull * full * gum;
 }
 // 先生がこっちを向いている時間。その間にたまる眠気が faceMaxSleep を超えないようにする
-// 終盤の難しさ：rampFrom 限をこえた分だけ、ゆっくり難しくなり続ける（眠気のたまり方・黒板を向く時間・予兆の長さ）
-function lateDiff() { return Math.max(0, S.period - P.rampFrom); }
+// ===== テンポ（難しさ）=====
+// 時限が進むほど、すべてが少しずつ速くなる（シャトルラン）。上限なし
+// 眠気のたまる速さ・目を閉じたときに下がる速さ・先生とイベントの進む速さを、同じ倍率で速くする
+// ＝上手に寝れば眠気の釣り合いはとれるが、予兆から振り向くまでの時間はどんどん短くなる
+function tempo() { return 1 + diff() * P.tempoGrow; }
 // 先生がこっちを見ている時間。その間にたまる眠気が faceMaxSleep をこえず、眠気も95をこえない長さにする
 // （見られている間は目を開けるしかないので、ここで100になるとどうしようもない）
+// 返すのは「先生の時間」（テンポ倍で進む）。実際の時間 × テンポ
 function faceTime(want) {
   const room = Math.min(P.faceMaxSleep, Math.max(12, 95 - S.sleep));
-  return Math.min(want, Math.max(0.6, room / sleepRate() * rand(0.6, 0.9)));
+  return Math.min(want, Math.max(0.6, room / sleepRate() * tempo() * rand(0.6, 0.9)));
 }
 
 function setupPeriod() {
@@ -1181,10 +1197,14 @@ function setupPeriod() {
   else if (DEV.event) { S.eventType = DEV.event; S.eventAt = DEV.eventAt; }   // 開発者メニュー：毎時限このイベント
   S.chatterAt = -1;
   if (DEV.event.startsWith('chat:')) S.chatterAt = DEV.eventAt;
-  // 2限からは毎時限かならず1つ：ピンチ・チャンス（eventRate）か、にぎやかし（残り）
+  // 2限からは毎時限かならず1つ以上：ピンチ・チャンス（eventRate）か、にぎやかし（残り）。eventsGrowEvery 時限ごとに1つ増える
+  S.evQ = [];
   if (S.period >= 2 && !DEV.event) {
-    if (Math.random() < P.eventRate) { S.eventType = pickEvent(ph); S.eventAt = rand(14, 40); }
-    else S.chatterAt = rand(10, 45);
+    const n = Math.min(P.eventsMax, 1 + Math.floor((S.period - 2) / P.eventsGrowEvery));
+    for (let i = 0; i < n; i++) {
+      const at = 12 + (38 / n) * i + rand(0, 38 / n * 0.6);
+      S.evQ.push(Math.random() < P.eventRate ? { at, type: pickEvent(ph) } : { at, chat: true });
+    }
   }
   S.spookyAt = S.spooky ? [rand(8, 18), rand(24, 34), rand(40, 52)] : null;   // 怪談を聞いたあとの物音
   S.warmT = 0; S.lullT = 0;
@@ -1207,7 +1227,7 @@ function setupPeriod() {
   }
   placeModel();
   // 真夜中の音楽室では、肖像画も見張りになる
-  S.port = room === 'music' && ph.key === 'midnight' ? { state: 'dim', t: rand(P.portGapMin, P.portGapMax) } : null;
+  S.port = null;   // 肖像画の見張りはなし（ユーザー判断）。夜の音楽室で肖像画の目が光るのは、ただの飾り
   document.body.classList.remove('port-warn', 'port-watch');
   teacher.g.style.display = '';
   el('chalk').textContent = pick(SUBJECTS[sub].board[S.level]);   // 黒板は問題のレベルに合わせる
@@ -1216,7 +1236,6 @@ function setupPeriod() {
   const boss = DEV.ttype ? DEV.ttype === 'boss' : posInDay(S.period) % 6 === 0;
   S.ttype = DEV.ttype || (boss ? 'boss' : S.period === 1 ? 'normal' : pick(TEACHER_TYPE_POOL.filter((k) => k !== S.lastTtype)));
   S.lastTtype = S.ttype; S.chalkUsed = false; S.walk = null;
-  if (TEACHER_TYPE_POOL.includes(S.ttype)) { S.seenT.add(S.ttype); if (S.seenT.size >= TEACHER_TYPE_POOL.length) award(8); }
   if (ph.key === 'dawn') award(9);
   const look = boss ? BOSS_LOOK : ph.teacher;
   if (S.teacherLook !== look) {   // 学年主任のときだけ、先生の見た目を入れかえる
@@ -1235,7 +1254,7 @@ function setupPeriod() {
   if (boss) {
     // 学年主任の授業＝ボス戦：前半は鬼の板書 → 中盤は見回り2回 → 終盤は「全員、起立！」
     S.boss = { patrols: P.bossPatrolAt.slice(), stage: null, t: 0 };
-    S.eventAt = -1;
+    S.eventAt = -1; S.evQ = [];
     S.calls = makeCalls(lessonLen()).filter((c) => c < P.bossEndAt - 5);
     bossEntrance();
     showBanner('！ 学年主任の授業 ！', ttype().desc, `${S.period}限　${sub}`);
@@ -1277,8 +1296,11 @@ function makeCalls(len = P.lessonSec) {
     let r = Math.random(); n = 2;
     for (const [k, w] of P.callsRate) { if (r < w) { n = k; break; } r -= w; }
   }
-  // 10秒〜（終わりの5秒前）を n 等分して、それぞれの中で少しずらす（間は必ず callGap 秒以上あく）
-  const span = (len - 15) / n, jitter = Math.max(0, span - P.callGap);
+  n += Math.floor(Math.max(0, S.period - 2) / P.callsGrowEvery);   // 時限が進むほど増える
+  const gap = Math.max(P.callGapMin, P.callGap / tempo());
+  n = Math.max(1, Math.min(n, Math.floor((len - 15) / gap) + 1));
+  // 10秒〜（終わりの5秒前）を n 等分して、それぞれの中で少しずらす（間は必ず gap 秒以上あく）
+  const span = (len - 15) / n, jitter = Math.max(0, span - gap);
   return Array.from({ length: n }, (_, i) => 10 + i * span + rand(0, jitter));
 }
 
@@ -1417,16 +1439,27 @@ function qListen() {
 // 眠いほど：押してから止まるまでが遅れる、表示がゆらぐ、ちょうどいい幅がせまくなる
 // setup(Q, lv, sl) で prompt・speed・html を決め、draw(c, t) で表示を更新、judge(c, t) で正解か判定、over(c, t) で失敗（あふれた等）
 const LABS = {
+  // BTB：青（アルカリ性）↔ 緑（中性）↔ 黄（酸性）。酸をたらすと黄へ、アルカリをたらすと青へ進む
+  // 目標は「中性」「酸性」「アルカリ性」のどれか。何色になれば正解かは書かない（知っているかも問う）
   btb: {
     setup(Q, lv, sl) {
-      Q.prompt = 'BTB溶液に酸をたらす。\n緑（中性）になった瞬間に止めろ！';
+      Q.rev = Math.random() < 0.5;                       // true＝アルカリをたらす（黄→青）
+      Q.goal = pick(['中性', '中性', Q.rev ? 'アルカリ性' : '酸性']);
+      Q.prompt = `BTB溶液に${Q.rev ? 'アルカリ' : '酸'}をたらす。\n${Q.goal}になった瞬間に止めろ！`;
       Q.speed = [0, 0.22, 0.27, 0.32][lv];
-      Q.green = [0.42, 0.42 + [0, 0.2, 0.16, 0.12][lv] * (1 - sl / 170)];
-      Q.html = '<div class="beaker"><div class="liquid" id="labVal"></div></div><div class="legend"><i style="background:#3b6fd9"></i>青 アルカリ性<br><i style="background:#3fae5a"></i>緑 中性<br><i style="background:#e8cf2f"></i>黄 酸性</div>';
+      const w = [0, 0.2, 0.16, 0.12][lv] * (1 - sl / 170);
+      Q.green = [0.42, 0.42 + w];                          // 緑に見える範囲（色の値 v）
+      Q.win = Q.goal === '中性' ? Q.green : Q.goal === '酸性' ? [0.8, 1.0] : [0, 0.2];
+      Q.html = '<div class="beaker"><div class="liquid" id="labVal"></div></div>';
     },
-    draw(Q, c) { el('labVal').style.background = beakerColor(Math.max(0, c)); },
-    judge(Q, c) { const ok = c >= Q.green[0] && c <= Q.green[1]; return { ok, cause: c < Q.green[0] ? '理科の実験で、青いまま止めた' : 'BTB溶液を真っ黄色にした' }; },
-    over(Q, c) { return c >= 1.05 ? 'BTB溶液を真っ黄色にした' : null; },
+    v(Q, c) { return Q.rev ? 1 - c : c; },                  // 色の値：0＝青、1＝黄
+    name(Q, v) { return v < Q.green[0] ? '青' : v <= Q.green[1] ? '緑' : '黄'; },
+    draw(Q, c) { el('labVal').style.background = beakerColor(Math.max(0, Math.min(1, this.v(Q, c)))); },
+    judge(Q, c) {
+      const v = this.v(Q, c);
+      return { ok: v >= Q.win[0] && v <= Q.win[1], cause: `${Q.goal}のつもりが、BTB溶液を${this.name(Q, v)}色で止めた` };
+    },
+    over(Q, c) { return c >= 1.05 ? `BTB溶液に${Q.rev ? 'アルカリ' : '酸'}を入れすぎた` : null; },
   },
   thermo: {
     setup(Q, lv, sl) {
@@ -1436,7 +1469,7 @@ const LABS = {
       Q.speed = [0, 0.17, 0.2, 0.25][lv];
       const tick = (v) => `<i style="bottom:${(v - 20)}%"><b>${v}</b></i>`;
       Q.html = `<div class="thermo"><div class="tube"><div class="fill" id="labVal"></div>${[20, 40, 60, 80, 100, 120].map(tick).join('')}
-        <div class="target" style="bottom:${Q.target - 20}%"></div></div><div class="bulb"></div></div><div class="legend">目標<br><b style="font-size:20px;color:#d33">${lv === 1 ? '？' : Q.target}℃</b></div>`;
+        </div><div class="bulb"></div></div><div class="legend">目標<br><b style="font-size:20px;color:#d33">${lv === 1 ? '？' : Q.target}℃</b></div>`;
     },
     temp(c) { return 20 + c * 100; },
     draw(Q, c) { el('labVal').style.height = Math.max(0, Math.min(100, this.temp(c) - 20)) + '%'; },
@@ -1464,7 +1497,7 @@ const LABS = {
       Q.prompt = `メスシリンダーに水を注ぐ。\nちょうど${Q.target}mLで止めろ！`;
       Q.speed = [0, 0.17, 0.21, 0.26][lv];
       const ticks = Array.from({ length: 11 }, (_, i) => `<i style="bottom:${i * 10}%">${i % 2 === 0 ? `<b>${i * 10}</b>` : ''}</i>`).join('');
-      Q.html = `<div class="cyl"><div class="glass"><div class="fill" id="labVal"></div>${ticks}<div class="target" style="bottom:${Q.target}%"></div></div></div><div class="legend">目標<br><b style="font-size:20px;color:#d33">${Q.target}mL</b></div>`;
+      Q.html = `<div class="cyl"><div class="glass"><div class="fill" id="labVal"></div>${ticks}</div></div><div class="legend">目標<br><b style="font-size:20px;color:#d33">${Q.target}mL</b></div>`;
     },
     draw(Q, c) { el('labVal').style.height = Math.max(0, Math.min(100, c * 100)) + '%'; },
     judge(Q, c) { return { ok: Math.abs(c * 100 - Q.target) <= Q.tol, cause: `メスシリンダーを${Math.round(c * 100)}mLで止めた（${Q.target}mLのはず）` }; },
@@ -1472,8 +1505,8 @@ const LABS = {
   },
   bal: {
     setup(Q, lv, sl) {
-      Q.period = [0, 2.4, 1.9, 1.5][lv];
-      Q.tol = [0, 4, 3, 2][lv] * (1 - sl / 200);
+      Q.period = [0, 2.8, 2.3, 1.9][lv];
+      Q.tol = [0, 7, 6, 5][lv] * (1 - sl / 200);
       Q.prompt = '天びんがゆれている。\nまっすぐ水平になった瞬間に止めろ！';
       Q.speed = 0;
       Q.html = '<div class="bal"><div class="beam" id="labVal"><i class="pan l"></i><i class="pan r"></i></div><div class="post"></div><div class="mark">水平</div></div>';
@@ -1509,10 +1542,16 @@ function easyQuestion() {
   const it = pickFresh(QUIZ_EASY[sub], sub + 'E:');
   return choiceQ(sub, it.q, it.a, it.w, it.c);
 }
+// 「さっき言ったこと、覚えてるか？」は、6時限ごとに2〜3回まで（時限が進んでも同じ）
+function listenOK() {
+  const block = Math.floor((S.period - 1) / 6);
+  if (S.listenBlock !== block) { S.listenBlock = block; S.listenUsed = 0; S.listenQuota = randInt(P.listenPer6[0], P.listenPer6[1]); }
+  return S.listenUsed < S.listenQuota;
+}
 function makeQuestion(noBeaker) {
   const sub = S.subject;
   if (S.period <= P.easyPeriods && !S.test) return easyQuestion();
-  if (S.facts.length && Math.random() < 0.3) return qListen();
+  if (S.facts.length && listenOK() && Math.random() < 0.3) { S.listenUsed++; return qListen(); }
   const kind = SUBJECTS[sub].quiz;
   if (kind === 'math') return qMath();
   if (sub === '社会' && Math.random() < P.photoRate) { const q = qPhoto(); if (q) return q; }
@@ -1579,11 +1618,12 @@ function startQuiz() {
     // 理科の実験：ちょうどいい瞬間に止める。眠いと押してから止まるまでが遅れる
     Q.limit = 99;
     Q.c = 0; Q.lag = sl / 100 * 0.3; Q.stopAt = -1;
-    ex.innerHTML = Q.html;
+    Q.t = -P.labReady;   // マイナスの間はカウントダウン（何をする実験か読む時間）
+    ex.innerHTML = Q.html + '<div class="labCount" id="labCount"></div>';
     LABS[Q.lab].draw(Q, 0, 0);
     const b = document.createElement('button');
     b.textContent = '止める！';
-    b.addEventListener('click', (e) => { e.stopPropagation(); if (Q.stopAt < 0) Q.stopAt = Q.t + Q.lag; });
+    b.addEventListener('click', (e) => { e.stopPropagation(); if (Q.stopAt < 0 && Q.t >= 0) Q.stopAt = Q.t + Q.lag; });
     ch.appendChild(b);
   }
   el('qTimer').style.visibility = Q.kind === 'choice' ? 'visible' : 'hidden';
@@ -1608,6 +1648,9 @@ function stepQuiz(dt) {
     if (Q.t >= Q.limit) answer(-1);
   } else {
     const L = LABS[Q.lab];
+    const cd = el('labCount');
+    if (Q.t < 0) { cd.textContent = Math.ceil(-Q.t); cd.style.display = ''; return; }   // カウントダウン中は止まっている
+    if (cd.style.display !== 'none') { cd.textContent = 'スタート！'; if (Q.t > 0.5) cd.style.display = 'none'; }
     Q.c += Q.speed * dt;
     const shake = Math.sin(Q.t * 9) * S.sleep / 100 * 0.04;  // 眠いと表示がゆらいで見える
     L.draw(Q, Q.c + shake, Q.t + shake * 2);
@@ -2083,7 +2126,7 @@ window.addEventListener('keydown', (e) => {
   if (e.code === 'Escape' || e.code === 'KeyP') { mode === 'pause' ? resume() : pause(); }
   if (e.code === 'KeyC') drinkCoffee();
   if (mode === 'quiz' && Q && Q.kind === 'choice' && ['Digit1', 'Digit2', 'Digit3'].includes(e.code)) answer(Number(e.code.slice(-1)) - 1);
-  if (mode === 'quiz' && Q && Q.kind === 'lab' && e.code === 'Enter' && Q.stopAt < 0) Q.stopAt = Q.t + Q.lag;
+  if (mode === 'quiz' && Q && Q.kind === 'lab' && e.code === 'Enter' && Q.stopAt < 0 && Q.t >= 0) Q.stopAt = Q.t + Q.lag;
 });
 window.addEventListener('keyup', (e) => { if (e.code === 'Space') up(); });
 
@@ -2113,10 +2156,9 @@ function stepTeacher(dt) {
   const T = ttype();                          // 先生のクセ（B）
   const sus = (S.suspect ? P.suspectMul : 1) * (T.boardMul || 1) * (S.lullT > 0 ? 1.6 : 1);   // 保健室で休んだあとは、先生がよく振り向く
   // 下限は、クセや保健室の倍率をかけたあとにも守る（黒板を向いている時間が短すぎると、上手に寝ても眠気が増える一方になる）
-  const late = lateDiff();
-  const minF = Math.max(P.boardMinLast, P.boardMinFloor - late * P.lateBoardShrink), maxF = Math.max(P.boardMaxLast, P.boardMaxFloor - late * P.lateBoardShrink);
-  const boardMin = Math.max(minF, (P.boardMin - d * 0.08) * sus), boardMax = Math.max(maxF, (P.boardMax - d * 0.15) * sus);
-  const warn = Math.max(Math.max(P.warnLast, P.warnMin - late * P.lateWarnShrink), P.warnSec - d * 0.02) * (S.seatZ ? P.seatWarnMul : 1);
+  const boardMin = Math.max(P.boardMinFloor, P.boardMin * sus), boardMax = Math.max(P.boardMaxFloor, P.boardMax * sus);
+  // 予兆は先生の時間で warnSec。ただし実際の時間で warnRealMin より短くならないように
+  const warn = Math.max(P.warnRealMin * tempo(), P.warnSec * (S.seatZ ? P.seatWarnMul : 1));
   const feint = S.period <= P.easyPeriods && !T.feintAdd ? 0 : Math.min(0.6, P.feintRate + d * 0.015 + (T.feintAdd || 0));
   // 先生が黒板を向いてから何秒たったか（肖像画の見張りが続けて来ないようにするため）
   if (S.tState !== S.prevT) { S.boardT = 0; S.prevT = S.tState; }
@@ -2206,7 +2248,7 @@ function startRound() {
   const peek = Math.random() < P.roundPeekRate;
   const stopT = peek ? P.roundStopWarn + P.roundPeekSec : 0;
   const unsafe = segs[0] + segs[1] + segs[2];
-  const budget = Math.max(1.5, Math.min(P.roundMaxGain, 95 - S.sleep) / sleepRate() - stopT);
+  const budget = Math.max(1.5, Math.min(P.roundMaxGain, 95 - S.sleep) / sleepRate() * tempo() - stopT);
   const speed = Math.max(P.roundSpeed, visible / ft, unsafe / budget);
   S.tState = 'round';
   S.walk = { t: 0, pts, segs, total: segs.reduce((a, b) => a + b, 0), d: 0, speed, peek, peekAt: rand(0.25, 0.75), stage: 'go' };
@@ -2529,14 +2571,14 @@ function step(dt) {
 
   // 眠いと勝手にまぶたが落ちてくる
   S.driftBlink = Math.max(0, S.driftBlink - dt);
-  if (S.sleep > 70 && Math.random() < dt * (S.sleep - 60) / 40) S.driftBlink = rand(0.4, 0.9);
+  if (S.sleep > P.dangerAt && Math.random() < dt * (S.sleep - P.dangerAt + 10) / 40) S.driftBlink = rand(0.4, 0.9);
   let target = S.holding ? 1 : 0;
   // 勝手に落ちるまぶたは「寝ている」判定の手前で止める（自分で防げないアウトをなくすため）
-  if (!S.holding && S.driftBlink > 0) target = Math.min(P.caughtLid - 0.07, 0.3 + (S.sleep - 70) / 60);
+  if (!S.holding && S.driftBlink > 0) target = Math.min(P.caughtLid - 0.07, 0.3 + (S.sleep - P.dangerAt) / 60);
   S.lid += (target - S.lid) * Math.min(1, dt * (S.holding ? 7 : 9));
 
   if (S.groggy > 0) S.groggy -= dt;
-  if (S.lid > 0.8) { S.sleep = Math.max(0, S.sleep - P.sleepDown * dt); S.sleepTime += dt; S.wasClosed = true; }   // 睡眠時間（チャレンジ用）
+  if (S.lid > 0.8) { S.sleep = Math.max(0, S.sleep - P.sleepDown * tempo() * dt); S.sleepTime += dt; S.wasClosed = true; }   // 睡眠時間（チャレンジ用）
   else if (S.boss && (S.boss.stage === 'stand' || S.boss.stage === 'rei')) {}   // 「起立！」〜「着席」の間は眠気がたまらない
   else S.sleep = Math.min(100, S.sleep + sleepRate() * dt);
   if (S.lid < P.caughtLid) S.awakeTime += dt;   // 起きていた時間（スコア）
@@ -2548,15 +2590,21 @@ function step(dt) {
   if (S.talkTimer <= 0 && S.tState !== 'warn' && !S.event && teacher.g.style.display !== 'none') { talk(); S.talkTimer = rand(P.talkMin, P.talkMax); }
 
   // イベントは、先生が少し黒板を向いていて、眠気が高すぎないときに始める（始まったら目を開け続ける時間があるので）
+  // 次のイベントを列から出す（前のイベントが終わってから）
+  if (S.evQ && S.evQ.length && S.eventAt < 0 && S.chatterAt < 0 && !S.event && S.lessonT >= S.evQ[0].at) {
+    const e = S.evQ.shift();
+    if (e.chat) S.chatterAt = S.lessonT + 0.01; else { S.eventType = e.type; S.eventAt = S.lessonT + 0.01; }
+  }
   if (!S.event && S.eventAt > 0 && S.lessonT >= S.eventAt && S.tState === 'board' && S.boardT >= P.minBoardGap && S.sleep <= P.eventMaxSleep && (!S.port || S.port.state === 'dim')) { S.eventAt = -1; startEvent(S.eventType); }
-  stepEvent(dt);
+  const tdt = dt * tempo();   // 先生の時間
+  stepEvent(tdt);
   if (mode !== 'play') return;
-  stepBossEntry(dt);
+  stepBossEntry(tdt);
   stepBossEnd(dt);
   if (mode !== 'play') return;
   stepPortraits(dt);
   if (mode !== 'play') return;
-  stepTeacher(dt);
+  stepTeacher(tdt);
   if (mode !== 'play') return;
 
   if (S.period === DEV.start && S.lessonT > 12) el('hint').style.opacity = 0;
@@ -2569,7 +2617,7 @@ function step(dt) {
       else return gameOver('caught');
     }
   } else S.closedTime = 0;
-  if (S.sleep >= 70) tip('danger');
+  if (S.sleep >= P.dangerAt) tip('danger');
   if (S.sleep >= 100) return gameOver('sleep');
 }
 
@@ -2584,11 +2632,13 @@ const MINI = {
 let M = null;
 function startMini(kind) {
   mode = 'mini'; S.holding = false;
-  M = { kind, t: -P.miniReady, n: 0, done: false };   // t がマイナスの間は「よーい」
-  if (kind === 'pan') { M.rival = 0; M.rivalRate = rand(P.panRivalMin, P.panRivalMax); }
-  if (kind === 'curry') { M.v = 0; }
-  if (kind === 'volley') { M.ball = 0; M.hits = 0; M.y = -0.1; M.tried = false; M.wait = 0; M.mark = ''; }
-  el('mTitle').textContent = MINI[kind].title;
+  const lv = S.miniPlays[kind] = (S.miniPlays[kind] || 0) + 1;   // 何回目か（2回目から少しずつ難しく）
+  const k = lv - 1;
+  M = { kind, t: -P.miniReady, n: 0, done: false, lv };   // t がマイナスの間は「よーい」
+  if (kind === 'pan') { M.rival = 0; M.rivalRate = rand(P.panRivalMin, P.panRivalMax) + k * P.panRivalUp; }
+  if (kind === 'curry') { M.v = 0; M.speed = P.currySpeed + k * P.curryUp; const w = Math.max(P.curryZoneMin, (P.curryZone[1] - P.curryZone[0]) - k * 3); M.zone = [P.curryZone[0], P.curryZone[0] + w]; }
+  if (kind === 'volley') { M.ball = 0; M.hits = 0; M.y = -0.1; M.tried = false; M.wait = 0; M.mark = ''; M.fall = P.volleyFall.map((f) => f * Math.pow(P.volleyFaster, k)); }
+  el('mTitle').textContent = MINI[kind].title + (lv > 1 ? `（${lv}回目）` : '');
   el('mHow').textContent = MINI[kind].how;
   el('mini').classList.remove('hidden');
   drawMini();
@@ -2599,8 +2649,8 @@ function miniPress() {
   else if (M.kind === 'curry') finishMini();
   else if (M.kind === 'volley' && !M.tried && M.wait <= 0) {
     M.tried = true;
-    if (M.y > 1 - P.volleyWindow && M.y < 1 + P.volleyWindow * 0.6) { M.hits++; M.mark = 'ナイス！'; sfxOk(); }
-    else { M.mark = 'ミス……'; sfxNg(); }
+    if (volleyIn()) { M.hits++; M.mark = 'ナイス！'; M.hitAt = M.t; sfxOk(); }
+    else { M.mark = M.y < 1 - P.volleyWindow ? '早すぎ……' : '遅すぎ……'; sfxNg(); }
     M.wait = 0.55;
   }
 }
@@ -2610,21 +2660,21 @@ function stepMini(dt) {
   if (M.done) { if (M.t > M.endAt) closeMini(); drawMini(); return; }
   if (M.t >= 0) {
     if (M.kind === 'pan') { M.rival += M.rivalRate * dt; if (M.t >= P.panSec) finishMini(); }
-    else if (M.kind === 'curry') { M.v += dt * (P.currySpeed + M.t * 25); if (M.v >= 105) finishMini(); }
+    else if (M.kind === 'curry') { M.v += dt * (M.speed + M.t * 25); if (M.v >= 105) finishMini(); }
     else if (M.kind === 'volley') {
       if (M.wait > 0) {
         M.wait -= dt;
         if (M.wait <= 0) { M.ball++; if (M.ball >= 3) return finishMini(); M.y = -0.1; M.tried = false; M.mark = ''; }
       } else if (M.t >= 0.4) {   // 「ドン！」の文字が消えてから落ち始める（ボールに重ならないように）
-        M.y += dt / P.volleyFall[M.ball];
-        if (M.y > 1.15 && !M.tried) { M.tried = true; M.mark = 'ミス……'; sfxNg(); M.wait = 0.55; }
+        M.y += dt / M.fall[M.ball];
+        if (M.y > 1 + P.volleyWindow && !M.tried) { M.tried = true; M.mark = '遅すぎ……'; sfxNg(); M.wait = 0.55; }
       }
     }
   }
   drawMini();
 }
 function finishMini() {
-  M.done = true; M.endAt = M.t + 1.6;
+  M.done = true; M.endAt = M.t + 1.6; M.doneAt = M.t;
   if (M.kind === 'pan') {
     M.win = M.n > M.rival;
     M.down = M.win ? 45 : 5;
@@ -2632,8 +2682,8 @@ function finishMini() {
     if (M.win) sfxOk(); else sfxNg();
   } else if (M.kind === 'curry') {
     const v = Math.min(100, M.v);
-    if (v >= P.curryZone[0] && v <= P.curryZone[1]) { M.down = 40; M.msg = 'ちょうどいいカレー！'; sfxOk(); }
-    else if (v < P.curryZone[0]) { M.down = 20; M.msg = 'ルーが少なすぎた……'; sfxNg(); }
+    if (v >= M.zone[0] && v <= M.zone[1]) { M.down = 40; M.msg = 'ちょうどいいカレー！'; sfxOk(); }
+    else if (v < M.zone[0]) { M.down = 20; M.msg = 'ルーが少なすぎた……'; sfxNg(); }
     else { M.down = 30; S.full = true; M.msg = 'ルー多すぎ！ 満腹で次の授業が少し眠い'; sfxNg(); }
   } else {
     M.down = Math.max(5, M.hits * 15);
@@ -2641,6 +2691,7 @@ function finishMini() {
   }
   M.msg += `（眠気 −${M.down}）`;
 }
+function volleyIn() { return M.y >= 1 - P.volleyWindow && M.y <= 1 + P.volleyWindow * 0.6; }
 function closeMini() {
   el('mini').classList.add('hidden');
   S.recover = Math.min(S.sleep, M.down);
@@ -2655,14 +2706,23 @@ function drawMini() {
   let h = '';
   if (M.kind === 'pan') {
     const max = Math.max(30, M.n, M.rival);
-    h = `<div class="bar"><i style="width:${M.n / max * 100}%"></i><span>あなた ${M.n}</span></div>
+    // 焼きそばパンが、押した回数の多い方へ寄っていく。終わったら勝った方の手に
+    const lead = M.done ? (M.win ? -1 : 1) : Math.max(-1, Math.min(1, (M.rival - M.n) / 8));
+    h += `<div class="panRow"><span class="who">あなた</span><div class="panTrack"><div class="yakisoba" style="left:${50 + lead * 28}%;transform:${M.done ? `scale(${(1 + 0.35 * Math.sin(Math.min(1, (M.t - M.doneAt) / 0.6) * Math.PI)).toFixed(2)})` : 'none'}"></div></div><span class="who">ライバル</span></div>`;
+    h += `<div class="bar"><i style="width:${M.n / max * 100}%"></i><span>あなた ${M.n}</span></div>
       <div class="bar rival"><i style="width:${M.rival / max * 100}%"></i><span>ライバル ${Math.floor(M.rival)}</span></div>
       <div style="font-size:15px;font-weight:900">のこり ${Math.max(0, P.panSec - Math.max(0, M.t)).toFixed(1)}秒</div>`;
   } else if (M.kind === 'curry') {
-    const [a, z] = P.curryZone;
-    h = `<div class="pot"><b style="bottom:${a}%;height:${z - a}%"></b><i style="height:${Math.min(100, M.v)}%"></i></div>`;
+    const [a, z] = M.zone;
+    const v = Math.min(100, M.v);
+    h = `<div class="curryRow"><div class="pot"><b style="bottom:${a}%;height:${z - a}%"></b><i style="height:${v}%"></i></div>
+      <div class="plate"><div class="rice"></div><div class="roux" style="width:${20 + v * 0.75}%;height:${12 + v * 0.45}%"></div></div></div>`;
   } else {
-    h = `<div class="court"><div class="hand" style="top:${80 * 1.8}px"></div><div class="ball" style="top:${Math.max(-0.1, M.y) * 80 * 1.8}px"></div></div>
+    // 光る帯＝ここで押せばレシーブ成功。ボールが帯に入ると黄色く光る。成功するとボールが上に飛んでいく
+    const up = M.hitAt != null && M.t - M.hitAt < 0.55 ? (M.t - M.hitAt) / 0.55 : 0;
+    const by = up ? (1 - up * 1.3) : Math.max(-0.1, M.y);
+    h = `<div class="court"><div class="zone" style="top:${(1 - P.volleyWindow) * 144 + 15}px;height:${P.volleyWindow * 1.6 * 144}px"></div><div class="hand" style="top:${144 + 15}px"></div>
+      <div class="ball${!M.tried && M.wait <= 0 && volleyIn() ? ' in' : ''}" style="top:${by * 144}px"></div></div>
       <div style="font-size:15px;font-weight:900;margin-top:6px">${Math.min(M.ball + 1, 3)}球目　${M.mark}</div>`;
   }
   if (M.t < 0) h += `<div class="big" style="position:absolute;left:0;right:0;top:60px">よーい……</div>`;
@@ -2701,6 +2761,8 @@ function endPeriod() {
   const lunch = posInDay(S.period) === 4 || S.devLunch;
   S.devLunch = false;
   if (S.suspect) award(1);                              // 保健室で休んだ次の授業を乗り切った
+  // 先生5種類コンプ：その先生の授業を最後まで乗り切ったら1種類（授業を受け始めただけでは数えない）
+  if (TEACHER_TYPE_POOL.includes(S.ttype)) { S.seenT.add(S.ttype); if (S.seenT.size >= TEACHER_TYPE_POOL.length) award(8); }
   if (S.ttype === 'boss') award(2);
   if (S.ttype === 'chalk' && !S.chalkUsed) award(4);    // チョーク投げ先生にチョークを投げられなかった
   // 学年主任の授業を乗り切ったごほうび
@@ -2838,7 +2900,7 @@ function render() {
   el('eyeLid').style.height = (S.sleep * 0.85) + '%';
   el('gumTag').style.display = S.gum && (mode === 'play' || mode === 'call') ? '' : 'none';
   if (S.cups !== render.cups || (S.drinking != null) !== render.drk) { render.cups = S.cups; render.drk = S.drinking != null; updateCupBtn(); }
-  el('sleepBox').classList.toggle('danger', S.sleep >= 70);
+  el('sleepBox').classList.toggle('danger', S.sleep >= P.dangerAt);
   const tf = el('pTimeFill'); if (tf) tf.style.width = Math.max(0, 100 - S.lessonT / lessonLen() * 100) + '%';
   if (S.period) {
     const pos = posInDay(S.period);
@@ -3010,18 +3072,9 @@ function shareText() {
 }
 function shareUrl() { return SITE_URL || (location.protocol.startsWith('http') ? location.href.split(/[?#]/)[0] : ''); }
 // スマホで「画像つきの共有」ができるなら、結果の画像といっしょに共有する。できなければXの投稿画面を開く（文字だけ）
-// スマホ：共有メニューで、通知表の画像と文をいっしょに渡す（Xを選ぶと画像つきで投稿できる）
-// パソコン：Xの投稿画面は画像を受け取れないので、画像をクリップボードにコピーしてからXを開く（貼り付けで画像つきになる）
+// Xでシェア：押したらすぐにXの投稿画面を開く（文とリンクは入った状態）。
+// Xの投稿画面には外から画像を渡せないので、その前に通知表の画像をコピーしておき、貼り付ければ画像も付くようにする
 async function share() {
-  const canFiles = navigator.canShare && navigator.canShare({ files: [new File([''], 'x.png', { type: 'image/png' })] });
-  if (canFiles) {
-    try {
-      const blob = await resultBlob();
-      const file = new File([blob], 'suimin-gakushu.png', { type: 'image/png' });
-      await navigator.share({ files: [file], text: shareText() + (shareUrl() ? '\n' + shareUrl() : '') });
-      return;
-    } catch (e) { if (e && e.name === 'AbortError') return; }
-  }
   const url = shareUrl();
   const intent = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText()) + (url ? '&url=' + encodeURIComponent(url) : '');
   const w = window.open('', '_blank');   // 先に開いておく（あとで開くと、ポップアップとして止められることがある）
@@ -3031,10 +3084,8 @@ async function share() {
     if (navigator.clipboard && window.ClipboardItem) { await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); copied = true; }
   } catch (e) {}
   if (w) w.location.href = intent; else location.href = intent;
-  el('shareNote').textContent = copied ? '通知表の画像をコピーしました。Xの投稿画面で貼り付け（Ctrl+V）すると、画像つきで投稿できます。'
-    // http のページ（公開前にスマホで開いたときなど）は、ブラウザが画像つきの共有もコピーも止める
-    : !window.isSecureContext ? 'このページ（http）では、画像つきの共有がブラウザに止められています（公開後の https なら画像つきで共有できます）。今は上の通知表を長押しで保存して、Xの投稿に付けてください。'
-    : '画像はいっしょに送れませんでした。「通知表を保存」で保存してから、Xの投稿に付けてください。';
+  el('shareNote').textContent = copied ? '通知表の画像をコピーしました。Xの投稿欄に貼り付けると、画像も付けられます。'
+    : '画像も付けるときは「通知表を保存」で保存して、Xの投稿に付けてください。';
 }
 async function saveImage() {
   const blob = await resultBlob();
@@ -3252,7 +3303,7 @@ function start() {
     safeAll: 0, turns: 0, called: 0, tests: 0, testPerfect: false, nurse: 0, coffee: 0, soldStreak: 0, lastSleepy: false, lessonTotal: 0,
     subj: {}, seenT: new Set(), got: new Set(), awardQ: [], awardBusy: false, seatZ: 0, boss: null, entry: null, camLiftTo: 0, forceWalk: false, standOK: false,
     double: false, hardQ: false, fastQ: false, preQ: null, forgive: false, proxy: false, warmT: 0, lullT: 0, chatterAt: -1,
-    notes: false, notedQ: false, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
+    notes: false, notedQ: false, miniPlays: {}, evQ: [], listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
   if (!DEV.on) { plays = Number(store('inemuri-plays') || 0) + 1; store('inemuri-plays', String(plays)); }   // 遊んだ回数＝通知表の「第○学期」
   ['bubble', 'me', 'float', 'cue'].forEach((k) => el(k).classList.remove('on'));
   ['quiz', 'breakPanel', 'startScreen', 'endScreen', 'pauseScreen'].forEach((k) => el(k).classList.add('hidden'));
