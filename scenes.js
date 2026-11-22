@@ -416,15 +416,15 @@ const PHASES = [
     talk: ['……先生も眠い', '朝日がまぶしいな……', 'もうすぐ1時間目だぞ……'] },
 ];
 // ----- 先生のクセ（授業ごとにランダム。1限はふつう、6限ごとは学年主任） -----
-// feintAdd: 振り向くフリが増える / boardMul: 黒板を向いている時間（小さいほどよく振り向く）
+// feint: 振り向くフリの確率（書いていない先生は P.feintRate＝10%） / boardMul: 黒板を向いている時間（小さいほどよく振り向く）
 // faceMul: こっちを見ている時間 / walkRate: 振り向くかわりに通路を歩いてくる確率
 const TEACHER_TYPES = {
   normal: { name: 'ふつうの先生', desc: '' },
-  feint: { name: 'フェイント先生', desc: '振り向くフリが多い', feintAdd: 0.3 },
+  feint: { name: 'フェイント先生', desc: '振り向くフリが多い', feint: 0.3 },
   fast: { name: 'せっかち先生', desc: 'すぐ振り向いて、すぐ戻る', boardMul: 0.7, faceMul: 0.55 },
   walker: { name: '歩き回る先生', desc: 'ときどき教室をぐるっと一周する。後ろで足音が止まったら注意', walkRate: 0.45 },
   chalk: { name: 'チョーク投げ先生', desc: '寝ているとチョークが飛んでくる（1回だけ許してくれる）' },
-  boss: { name: '学年主任', desc: '鬼の板書 → 見回り2回 → 最後に「起立！」。乗り切れば大きく回復', feintAdd: 0.25, boardMul: 0.8 },
+  boss: { name: '学年主任', desc: '鬼の板書 → 見回り2回 → 最後に「起立！」。乗り切れば大きく回復', feint: 0.3, boardMul: 0.8 },
 };
 const TEACHER_TYPE_POOL = ['normal', 'feint', 'fast', 'walker', 'chalk'];
 // 学年主任の見た目（こわそうな黒っぽいスーツとメガネ）

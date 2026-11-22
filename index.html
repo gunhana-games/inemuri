@@ -446,7 +446,7 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=4"></script>
+<script src="scenes.js?v=5"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
 const TITLE = 'うとうと学園';
@@ -461,7 +461,8 @@ const P = {
   lessonSec: 60,          // 1時限の長さ（秒）
   sleepStart: 20,         // 始めの眠気
   sleepUp: 5.5,           // 目を開けているとき、1秒に増える眠気（時限が進むと増える）
-  tempoGrow: 0.05,        // テンポ：1時限ごとに、眠気のたまる速さ・目を閉じたときに下がる速さ・先生やイベントの進む速さが、これだけ（倍）速くなる。上限なし
+  tempoGrow: 0.05,
+  recoverGrow: 0.029,     // 目を閉じたときに眠気が下がる速さの、1時限ごとの伸び（25時間目で約1.7倍。tempoGrow より小さいほど後半が苦しい）        // テンポ：1時限ごとに、眠気のたまる速さ・目を閉じたときに下がる速さ・先生やイベントの進む速さが、これだけ（倍）速くなる。上限なし
   easyPeriods: 1,         // 最初の何時限をやさしくするか（1限だけ。2限からクセのある先生やフェイントが出る）
   easyMul: 0.8,           // やさしい時限の眠気のたまりやすさ
   sleepDown: 24,          // 目を閉じているとき、1秒に減る眠気
@@ -469,7 +470,7 @@ const P = {
   warnSec: 1.4,           // 振り向く前の予兆の長さ（秒）。後半の「ゴホン」は最後の0.5秒
   warnRealMin: 0.55,      // テンポが上がっても、振り向く前の予兆は、実際の時間でこれ（秒）より短くしない（反応できる長さ）
   faceMin: 1.4, faceMax: 2.6,     // 先生がこっちを見ている時間（秒）
-  feintRate: 0.15,        // 予兆だけで振り向かない確率（時限が進むと増える）
+  feintRate: 0.1,         // 予兆だけで振り向かない確率（フェイント）。ふつうの先生などは、ずっとこの値
   caughtLid: 0.55,        // これ以上まぶたが閉じていたら「寝ている」
   caughtSec: 0.25,        // 見られてから何秒でアウトか
   maxMiss: 3,             // 何回まちがえたらアウトか
@@ -1153,7 +1154,17 @@ function nextAward() {
   later(2.4, nextAward);
 }
 function updateTitleRecord() {
-  el('titleRecord').innerHTML = plays ? `第${plays}学期まで終了　行動の記録 <b>〇 ${everGot.size}／${CHALLENGES.length}</b>` : '';
+  el('titleRecord').innerHTML = plays ? `第${plays}学期まで終了　行動の記録 <b>〇 ${everGot.size}／${CHALLENGES.length}</b>　学校行事 <b>${everEv.size}／${ALL_EVENT_IDS().length}</b>` : '';
+}
+// ===== 学校行事（イベント）の図鑑：一度でも見たイベントを、この端末に覚えておく =====
+// 定番4つ・追加イベント・席替え・にぎやかし。全部見たら、通知表の「特別活動の記録」に〇
+function ALL_EVENT_IDS() { return ['peek', 'phone', 'test', 'flash', 'seat'].concat(NEW_EVENTS.map((e) => e.type), CHATTER.map((c) => 'chat:' + c.id)); }
+let everEv = new Set();
+try { everEv = new Set(JSON.parse(store('inemuri-events') || '[]')); } catch (e) {}
+function seeEvent(id) {
+  if (!S.evSeen) return;
+  S.evSeen.add(id);
+  if (!DEV.on && !everEv.has(id)) { everEv.add(id); store('inemuri-events', JSON.stringify([...everEv])); }
 }
 // ===== 初めてのヒント：その仕組みが初めて起きた瞬間だけ、付せんのような一言を出す =====
 // 一度見たものは、この端末に覚えておいて2回目から出さない（覚えられないときは、このゲームの間だけ）
@@ -1186,6 +1197,8 @@ function sleepRate() {
 // 眠気のたまる速さ・目を閉じたときに下がる速さ・先生とイベントの進む速さを、同じ倍率で速くする
 // ＝上手に寝れば眠気の釣り合いはとれるが、予兆から振り向くまでの時間はどんどん短くなる
 function tempo() { return 1 + diff() * P.tempoGrow; }
+// 目を閉じたときに眠気が下がる速さの倍率。たまる速さ（tempo）より伸びをゆるくして、先に進むほど寝る時間を長く取らないと追いつかなくする
+function recoverTempo() { return 1 + diff() * P.recoverGrow; }
 // 先生がこっちを見ている時間。その間にたまる眠気が faceMaxSleep をこえず、眠気も95をこえない長さにする
 // （見られている間は目を開けるしかないので、ここで100になるとどうしようもない）
 // 返すのは「先生の時間」（テンポ倍で進む）。実際の時間 × テンポ
@@ -1231,7 +1244,7 @@ function setupPeriod() {
   S.seatZ = wantSeat;
   const roomChanged = room !== S.room;
   if (roomChanged || seatChanged) buildRoom(room);
-  if (S.seatZ) later(2.6, () => cue('ピンチ！ 席替えで一番前の席に……先生が近い', 2.2));
+  if (S.seatZ) { later(2.6, () => cue('ピンチ！ 席替えで一番前の席に……先生が近い', 2.2)); seeEvent('seat'); }
   if (S.gum) later(2.8, () => tip('gum'));
   if (!S.phase || S.phase.key !== ph.key || roomChanged || seatChanged) {
     S.phase = ph;
@@ -1802,6 +1815,7 @@ const PRINCIPAL_LOOK = PHASES.find((p) => p.key === 'midnight').teacher;
 function chatter(id) {
   const list = CHATTER.filter((x) => (x.needs !== 'students' || (S.phase.students !== 'none' && students.length)) && (!x.room || x.room === S.room));
   const c = id ? CHATTER.find((x) => x.id === id) : pick(list);
+  seeEvent('chat:' + c.id);   // 学校行事の図鑑
   CHATTER_FX[c.id]();
 }
 // ===== にぎやかし：教室の中で何かが動いて、音もする（遊びには影響しない）=====
@@ -1947,6 +1961,7 @@ function startEvent(type) {
   S.calls = S.calls.map((c, i) => (c < S.lessonT + 14 ? S.lessonT + 14 + i * P.callGap : c)).filter((c) => c < lessonLen() - 2);
   S.event = { type, t: 0, stage: 0 };
   const E = S.event, sp = speakerName();
+  seeEvent(type);   // 学校行事の図鑑
   if (type === 'peek') { cue('コツ……コツ……（廊下から足音）', 1.6); tip('peek'); }
   else if (type === 'principal') {
     E.adult = buildAdult(PRINCIPAL_LOOK, ROOM.w / 2 + 60, 0, DOOR_Z + 30, -90); E.adult.g.style.display = 'none';
@@ -2174,7 +2189,7 @@ function stepTeacher(dt) {
   const boardMin = Math.max(P.boardMinFloor, P.boardMin * sus), boardMax = Math.max(P.boardMaxFloor, P.boardMax * sus);
   // 予兆は先生の時間で warnSec。ただし実際の時間で warnRealMin より短くならないように
   const warn = Math.max(P.warnRealMin * tempo(), P.warnSec * (S.seatZ ? P.seatWarnMul : 1));
-  const feint = S.period <= P.easyPeriods && !T.feintAdd ? 0 : Math.min(0.6, P.feintRate + d * 0.015 + (T.feintAdd || 0));
+  const feint = S.period <= P.easyPeriods && T.feint === undefined ? 0 : (T.feint === undefined ? P.feintRate : T.feint);   // 時間がたっても増えない
   // 先生が黒板を向いてから何秒たったか（肖像画の見張りが続けて来ないようにするため）
   if (S.tState !== S.prevT) { S.boardT = 0; S.prevT = S.tState; }
   if (S.tState === 'board') S.boardT += dt;
@@ -2593,7 +2608,7 @@ function step(dt) {
   S.lid += (target - S.lid) * Math.min(1, dt * (S.holding ? 7 : 9));
 
   if (S.groggy > 0) S.groggy -= dt;
-  if (S.lid > 0.8) { S.sleep = Math.max(0, S.sleep - P.sleepDown * tempo() * dt); S.sleepTime += dt; S.wasClosed = true; }   // 睡眠時間（チャレンジ用）
+  if (S.lid > 0.8) { S.sleep = Math.max(0, S.sleep - P.sleepDown * recoverTempo() * dt); S.sleepTime += dt; S.wasClosed = true; }   // 睡眠時間（チャレンジ用）
   else if (S.boss && (S.boss.stage === 'stand' || S.boss.stage === 'rei')) {}   // 「起立！」〜「着席」の間は眠気がたまらない
   else S.sleep = Math.min(100, S.sleep + sleepRate() * dt);
   if (S.lid < P.caughtLid) S.awakeTime += dt;   // 起きていた時間（スコア）
@@ -2969,7 +2984,9 @@ function buildDevPanel() {
     <label for="dAt">イベントの時刻（秒）</label><input id="dAt" type="number" min="3" max="50" value="${DEV.eventAt}">
     <label for="dBr">休み時間から始める</label><select id="dBr">${opt([['', 'しない'], ['normal', '休み時間'], ['lunch', '昼休み']], DEV.breakStart)}</select>
     <label for="dPick">休み時間に必ず出す</label><select id="dPick">${opt([['', 'ランダム']].concat(BREAK_ACTIONS.map((a) => [a.id, a.name + (a.when ? '（' + ({ lunch: '昼休み', day: '朝〜昼', evening: '補習', night: '夜', midnight: '真夜中', dawn: '夜明け' })[a.when] + '）' : '')])), DEV.breakPick)}</select>
-    <label for="dGod">無敵（アウトにならない）</label><input id="dGod" type="checkbox"${DEV.god ? ' checked' : ''}>`;
+    <label for="dGod">無敵（アウトにならない）</label><input id="dGod" type="checkbox"${DEV.god ? ' checked' : ''}>
+    <label for="dGrow">眠気がたまる速さの伸び（1時間ごと）</label><input id="dGrow" type="number" step="0.005" min="0" max="0.3" value="${P.tempoGrow}">
+    <label for="dRec">目を閉じて下がる速さの伸び（1時間ごと）</label><input id="dRec" type="number" step="0.005" min="0" max="0.3" value="${P.recoverGrow}">`;
   box.classList.remove('hidden');
   el('titleRecord').textContent = '時間帯：1〜6時間目 朝〜昼／7〜9 補習／10〜15 夜／16〜21 真夜中／22〜24 夜明け（6時間目ごとに学年主任）';
 }
@@ -2978,6 +2995,9 @@ function readDevPanel() {
   DEV.subject = el('dSub').value; DEV.ttype = el('dT').value; DEV.event = el('dEv').value;
   DEV.eventAt = Math.max(3, Math.min(50, Number(el('dAt').value) || 8));
   DEV.breakStart = el('dBr').value; DEV.breakPick = el('dPick').value; DEV.god = el('dGod').checked;
+  const g1 = Number(el('dGrow').value), g2 = Number(el('dRec').value);
+  if (g1 >= 0 && g1 <= 0.3) P.tempoGrow = g1;
+  if (g2 >= 0 && g2 <= 0.3) P.recoverGrow = g2;
 }
 // 無敵：アウトになるはずだった所で知らせて、そのまま続ける
 function devSurvive(kind, causeText) {
@@ -3042,7 +3062,8 @@ function gameOver(kind, causeText, who) {
   S.result = { reached, cause, rank: rankOf(reached), sub: S.subject, sleep: fmtTime(S.sleepTime), sleepSec: S.sleepTime, awake: fmtTime(S.awakeTime), awakeSec: S.awakeTime,
     bestCombo: S.bestCombo, correct: S.correct, answered: S.answered, name: playerName, catcher: kind === 'sleep' ? '' : (who || speakerName()),
     kind, plays: DEV.on ? plays + 1 : plays, safeAll: S.safeAll, turns: S.turns, called: S.called, tests: S.tests, testPerfect: S.testPerfect, nurse: S.nurse, coffee: S.coffee,
-    lastSleepy: S.lastSleepy, lessonTotal: S.lessonTotal, subj: S.subj, got: new Set(S.got), ever: new Set(everGot) };
+    lastSleepy: S.lastSleepy, lessonTotal: S.lessonTotal, subj: S.subj, got: new Set(S.got), ever: new Set(everGot),
+    evNow: S.evSeen.size, evEver: DEV.on ? S.evSeen.size : everEv.size, evTotal: ALL_EVENT_IDS().length };
   // 通知表の画像は1回だけ作って、結果画面・シェア・保存で使い回す
   S.cardBlob = null; el('endCard').removeAttribute('src'); el('shareNote').textContent = '';
   resultBlob().then((b) => { S.cardBlob = b; el('endCard').src = URL.createObjectURL(b); });
@@ -3079,6 +3100,7 @@ function reportData(r) {
     behavior: CHALLENGES.map(([item, note], i) => [item, note, r.got.has(i), r.ever.has(i)]),
     record: { periods: r.reached, awake: r.awake, safeAll: r.safeAll, safe: r.bestCombo, turns: r.turns, called: r.called, correct: r.correct, test: r.tests },
     typeIdx: sleepType(r),
+    events: { now: r.evNow, ever: r.evEver, total: r.evTotal },
   };
 }
 function shareText() {
@@ -3268,7 +3290,7 @@ function drawResultCanvas() {
     const L2 = W / 2 + 34, R2 = W - 74;
     // 行動の記録（10個のチャレンジ。今回とれた〇と、これまでにとった〇を2列で）
     heading('行動の記録', L2, 62);
-    const hh = 22, ty = 74 + hh, rh = 30, cNow = R2 - 104, cEver = R2 - 52;
+    const hh = 22, ty = 74 + hh, rh = 27, cNow = R2 - 104, cEver = R2 - 52;
     // 列の見出し
     box(L2, 74, R2 - L2, hh + rh * d.behavior.length, 2);
     line(L2, ty, R2, ty, 1.5);
@@ -3286,8 +3308,17 @@ function drawResultCanvas() {
       if (ever) { g.strokeStyle = 'rgba(200,50,42,.45)'; g.lineWidth = 2; g.beginPath(); g.arc((cEver + R2) / 2, y + rh / 2, 9, 0, Math.PI * 2); g.stroke(); }
     });
 
+    // 特別活動の記録：学校行事（イベント）を何種類見たか。全部見たら〇
+    const evY = ty + rh * d.behavior.length + 8, ev = d.events;
+    box(L2, evY, R2 - L2, 30, 2);
+    line(cNow, evY, cNow, evY + 30, 1.5); line(cEver, evY, cEver, evY + 30, 1.5);
+    txt('特別活動', L2 + 10, evY + 21, 15, { w: 900 });
+    txt('学校行事（イベント）', L2 + 88, evY + 20, 12, { f: GOT, c: '#666' });
+    txt(`今回 ${ev.now}種類　これまで ${ev.ever}／${ev.total}`, cNow - 8, evY + 20, fit(`今回 ${ev.now}種類　これまで ${ev.ever}／${ev.total}`, 12, 150, GOT), { a: 'right', f: GOT, c: '#555' });
+    if (ev.ever >= ev.total) { g.strokeStyle = RED; g.lineWidth = 2.5; g.beginPath(); g.arc((cEver + R2) / 2, evY + 15, 10, 0, Math.PI * 2); g.stroke(); }
+
     // あなたの居眠りタイプ
-    const ky = ty + rh * d.behavior.length + 22;
+    const ky = evY + 30 + 14;
     g.fillStyle = '#fff3a8'; g.fillRect(L2, ky, R2 - L2, H - 60 - ky);
     box(L2, ky, R2 - L2, H - 60 - ky, 2, '#c9a93a');
     txt('あなたの居眠りタイプ', L2 + 18, ky + 32, 18, { f: GOT, c: '#6a5420' });
@@ -3319,7 +3350,7 @@ function start() {
     safeAll: 0, turns: 0, called: 0, tests: 0, testPerfect: false, nurse: 0, coffee: 0, soldStreak: 0, lastSleepy: false, lessonTotal: 0,
     subj: {}, seenT: new Set(), got: new Set(), awardQ: [], awardBusy: false, seatZ: 0, boss: null, entry: null, camLiftTo: 0, forceWalk: false, standOK: false,
     double: false, hardQ: false, fastQ: false, preQ: null, forgive: false, proxy: false, warmT: 0, lullT: 0, chatterAt: -1,
-    notes: false, notedQ: false, miniPlays: {}, evQ: [], listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
+    notes: false, notedQ: false, miniPlays: {}, evQ: [], evSeen: new Set(), listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
   if (!DEV.on) { plays = Number(store('inemuri-plays') || 0) + 1; store('inemuri-plays', String(plays)); }   // 遊んだ回数＝通知表の「第○学期」
   ['bubble', 'me', 'float', 'cue'].forEach((k) => el(k).classList.remove('on'));
   ['quiz', 'breakPanel', 'startScreen', 'endScreen', 'pauseScreen'].forEach((k) => el(k).classList.add('hidden'));
