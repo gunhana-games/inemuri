@@ -488,6 +488,7 @@ const P = {
   soldOutRate: 0.3,       // 購買のコーヒーが売り切れの確率
   caffeineMul: 0.7,       // コーヒーを飲んでしばらくの、眠気のたまりやすさ
   cupMax: 2,              // コーヒーを持てる本数
+  cupStart: 1,            // 最初から持っているコーヒーの本数
   drinkSec: 1.0,          // コーヒーを飲むのにかかる時間（秒）。その間に先生がこっちを見たらバレる
   drinkWake: 35,          // コーヒーを飲むと下がる眠気
   cafSec: 20,             // 飲んでから眠気がたまりにくい時間（秒）
@@ -3226,7 +3227,7 @@ function start() {
   store('inemuri-name', playerName);
   Object.assign(S, { sleep: P.sleepStart, lid: 0, holding: false, period: DEV.start, closedTime: 0, driftBlink: 0, misses: 0,
     bubbleTimer: 0, floatTimer: 0, cueTimer: 0, timers: [], timetable: {}, phase: null, lastCause: '', groggy: 0, late: false,
-    revealCalls: false, test: null, event: null, used: new Set(), talk: null, cups: 0, cafT: 0, drinking: null, prep: false, suspect: false, lastBeaker: false,
+    revealCalls: false, test: null, event: null, used: new Set(), talk: null, cups: P.cupStart, cafT: 0, drinking: null, prep: false, suspect: false, lastBeaker: false,
     sleepTime: 0, awakeTime: 0, combo: 0, bestCombo: 0, correct: 0, answered: 0, lastOpenAt: -99, wasClosed: false, ttype: 'normal', lastTtype: null, chalkUsed: false, walk: null,
     // 通知表に使う記録
     safeAll: 0, turns: 0, called: 0, tests: 0, testPerfect: false, nurse: 0, coffee: 0, soldStreak: 0, lastSleepy: false, lessonTotal: 0,
@@ -3250,6 +3251,7 @@ function start() {
   setupPeriod();
   chime(true);
   mode = 'play';
+  if (S.cups) later(8, () => tip('cup'));   // 最初から持っているコーヒーの飲み方（初めてのときだけ）
 }
 el('startBtn').addEventListener('click', start);
 el('cupBtn').addEventListener('click', (e) => { e.stopPropagation(); drinkCoffee(); });
