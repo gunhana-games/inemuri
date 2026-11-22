@@ -524,7 +524,8 @@ const P = {
   boardMinFloor: 1.5, boardMaxFloor: 2.6,   // 先生が黒板を向いている時間の、いちばん短いとき（先生の時間）
   roundMinGain: 30,       // 一周を始めてよいのは、眠気がまだ（95 − これ）以下のとき
   standWake: 25,          // 「起立！」で立つと下がる眠気
-  eventMaxSleep: 60,      // 眠気がこれより高いときは、イベントを少し待つ
+  eventMaxSleep: 60,      // チャンス以外のイベントは、眠気がこれより高いときは少し待つ
+  dangerChanceRate: 0.3,  // 眠気が白い線（dangerAt）をこえているとき、イベントがチャンスになる上乗せの確率
   faceMaxSleep: 50,       // 先生がこっちを向いている間にたまる眠気の上限（これを超える前に必ず黒板に戻る）
   beakerRate: 0.25,       // 理科で実験の問題が出る確率（2回続けては出ない）
   photoRate: 0.35,        // 社会で人物の写真問題が出る確率
@@ -1236,7 +1237,7 @@ function setupPeriod() {
     const n = S.period === 1 ? 1 : Math.min(P.eventsMax, 2 + Math.floor((S.period - 2) / P.eventsGrowEvery));
     for (let i = 0; i < n; i++) {
       const at = 12 + (38 / n) * i + rand(0, 38 / n * 0.6);
-      S.evQ.push(Math.random() < P.eventRate ? { at, type: pickEvent(ph) } : { at, chat: true });
+      S.evQ.push(Math.random() < P.eventRate ? { at, ev: true } : { at, chat: true });
     }
   }
   S.spookyAt = S.spooky ? [rand(8, 18), rand(24, 34), rand(40, 52)] : null;   // 怪談を聞いたあとの物音
@@ -1812,7 +1813,14 @@ const NEW_EVENTS = [
   // チャンス：先生が見ない
   { type: 'video' }, { type: 'broadcast' }, { type: 'sneeze' },
 ];
-function pickEvent(ph) {
+// チャンス（寝られる・眠気が下がる・問題が楽になる）のイベント。先生に電話も、先生がいなくなるのでチャンス
+const CHANCE_TYPES = new Set(['boardhint', 'mood', 'proxy', 'breeze', 'thunder', 'funny', 'video', 'broadcast', 'sneeze', 'phone']);
+// danger＝眠気が白い線（dangerAt）をこえているとき：少しだけチャンスが出やすい
+function pickEvent(ph, danger) {
+  if (danger && Math.random() < P.dangerChanceRate) {
+    const ch = NEW_EVENTS.filter((e) => CHANCE_TYPES.has(e.type) && (!e.ok || e.ok(ph))).map((e) => e.type).concat(ph.events.filter((t) => t === 'phone'));
+    return pick(ch);
+  }
   if (Math.random() < P.oldEventShare) return pick(ph.events);
   return pick(NEW_EVENTS.filter((e) => !e.ok || e.ok(ph))).type;
 }
@@ -2636,9 +2644,9 @@ function step(dt) {
   // 次のイベントを列から出す（前のイベントが終わってから）
   if (S.evQ && S.evQ.length && S.eventAt < 0 && S.chatterAt < 0 && !S.event && S.lessonT >= S.evQ[0].at) {
     const e = S.evQ.shift();
-    if (e.chat) S.chatterAt = S.lessonT + 0.01; else { S.eventType = e.type; S.eventAt = S.lessonT + 0.01; }
+    if (e.chat) S.chatterAt = S.lessonT + 0.01; else { S.eventType = pickEvent(S.phase, S.sleep > P.dangerAt); S.eventAt = S.lessonT + 0.01; }
   }
-  if (!S.event && S.eventAt > 0 && S.lessonT >= S.eventAt && S.tState === 'board' && S.boardT >= P.minBoardGap && S.sleep <= P.eventMaxSleep && (!S.port || S.port.state === 'dim')) { S.eventAt = -1; startEvent(S.eventType); }
+  if (!S.event && S.eventAt > 0 && S.lessonT >= S.eventAt && S.tState === 'board' && S.boardT >= P.minBoardGap && (S.sleep <= P.eventMaxSleep || CHANCE_TYPES.has(S.eventType)) && (!S.port || S.port.state === 'dim')) { S.eventAt = -1; startEvent(S.eventType); }
   const tdt = dt * tempo();   // 先生の時間
   stepEvent(tdt);
   if (mode !== 'play') return;
