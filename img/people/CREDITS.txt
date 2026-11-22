@@ -1,0 +1,23 @@
+人物の写真問題で使っている画像の出どころ
+すべてウィキメディア・コモンズ（https://commons.wikimedia.org/）で「パブリックドメイン（著作権が切れている）」とされている画像です。
+ゲーム用に、顔〜胸のあたりを切り抜いて小さくしています。
+
+ryoma.jpg   坂本龍馬（写真、1867年以前）        File:Sakamoto Ryoma.jpg
+xavier.jpg  フランシスコ・ザビエル（肖像画）      File:Franciscus de Xabier.jpg（下の名前の文字は答えがわかってしまうので切り落とした）
+ichiyo.jpg  樋口一葉（写真、1896年以前）        File:Higuchi Ichiyou.png
+yoshimitsu.jpg  足利義満（肖像画）              File:Yoshimitsu Ashikaga cropped.jpg
+ito.jpg     伊藤博文（写真、1900年）            File:ITŌ Hirobumi.jpg
+napoleon.jpg ナポレオン（フランソワ・ジェラール画、1805〜1815年）  File:François Gérard - Napoleon I 001.JPG（全身の絵から顔〜胸を切り抜き）
+lincoln.jpg リンカーン（写真、1863年）          File:Abraham Lincoln O-77 matte collodion print.jpg
+luther.jpg  ルター（クラーナハ工房の肖像画、1528年）  File:Lucas Cranach d.Ä. (Werkst.) - Porträt des Martin Luther (Lutherhaus Wittenberg).jpg
+nobunaga.jpg 織田信長（狩野宗秀の肖像画、1583年）  File:Oda-Nobunaga.jpg（「信長」の名が入った賛の文字は切り落とした）
+hideyoshi.jpg 豊臣秀吉（狩野光信の肖像画）        File:Toyotomi Hideyoshi.jpg
+ieyasu.jpg  徳川家康（肖像画、17世紀）          File:Tokugawa Ieyasu2 full.JPG（上の葵の紋は切り落とした）
+noguchi.jpg 野口英世（写真）                    File:Noguchi Hideyo.jpg
+fukuzawa.jpg 福沢諭吉（写真、1891年）           File:Fukuzawa Yukichi 1891.jpg
+shotoku.jpg 聖徳太子（唐本御影、8世紀）         File:Prince Shotoku.jpg（真ん中の聖徳太子だけを切り抜き）
+perry.jpg   ペリー（写真、1856〜1858年ごろ）    File:Commodore Matthew Calbraith Perry.png
+washington.jpg ワシントン（ギルバート・スチュアート画、1803年）  File:Gilbert Stuart Williamstown Portrait of George Washington (cropped)(2).jpg
+columbus.jpg コロンブス（リドルフォ・ギルランダイオ画、1520年ごろ）  File:Ridolfo Ghirlandaio Columbus.jpg
+
+saigo.jpg   西郷隆盛（エドアルド・キヨッソーネ画、1883年）  File:Takamori Saigo.jpg（下の画家のサインは切り落とした）
