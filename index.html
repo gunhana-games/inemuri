@@ -1519,7 +1519,8 @@ const LABS = {
 };
 function qLab() {
   // 前回と同じ実験は続けて出さない
-  const kinds = Object.keys(LABS).filter((k) => k !== S.lastLabKind);
+  // BTB（中学で習う）は、小学生レベル（level 1）の時間には出さない
+  const kinds = Object.keys(LABS).filter((k) => k !== S.lastLabKind && !(k === 'btb' && S.level === 1));
   const lab = pick(kinds);
   S.lastLabKind = lab;
   return { kind: 'lab', lab, sub: '理科', prompt: '' };
