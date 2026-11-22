@@ -479,7 +479,7 @@ const P = {
   callsGrowEvery: 5,      // この時限ごとに、1時限に当てられる回数が1回増える
   callGapMin: 5,          // 指名と指名の間の、いちばん短いとき（秒）
   eventsGrowEvery: 6,     // この時限ごとに、1時限に起きるイベント（ピンチ・チャンス・にぎやかし）が1つ増える
-  eventsMax: 4,           // 1時限に起きるイベントの最大
+  eventsMax: 5,           // 1時限に起きるイベントの最大
   listenPer6: [2, 3],     // 「さっき言ったこと、覚えてるか？」の問題は、6時限に2〜3回まで（ずっと同じ）
   callsFirst: 2,          // 1限に当てられる回数
   callsRate: [[2, 0.2], [3, 0.5], [4, 0.3]],   // 2限から、1時限に当てられる回数とその割合（2回2割・3回5割・4回3割）
@@ -1210,10 +1210,11 @@ function setupPeriod() {
   else if (DEV.event) { S.eventType = DEV.event; S.eventAt = DEV.eventAt; }   // 開発者メニュー：毎時限このイベント
   S.chatterAt = -1;
   if (DEV.event.startsWith('chat:')) S.chatterAt = DEV.eventAt;
-  // 2限からは毎時限かならず1つ以上：ピンチ・チャンス（eventRate）か、にぎやかし（残り）。eventsGrowEvery 時限ごとに1つ増える
+  // 1時間目は1つ、2〜7時間目は2つ、そのあと eventsGrowEvery 時間ごとに1つ増える（最大 eventsMax）
+  // 1つずつ、ピンチ・チャンス（eventRate）か、にぎやかし（残り）
   S.evQ = [];
-  if (S.period >= 2 && !DEV.event) {
-    const n = Math.min(P.eventsMax, 1 + Math.floor((S.period - 2) / P.eventsGrowEvery));
+  if (!DEV.event) {
+    const n = S.period === 1 ? 1 : Math.min(P.eventsMax, 2 + Math.floor((S.period - 2) / P.eventsGrowEvery));
     for (let i = 0; i < n; i++) {
       const at = 12 + (38 / n) * i + rand(0, 38 / n * 0.6);
       S.evQ.push(Math.random() < P.eventRate ? { at, type: pickEvent(ph) } : { at, chat: true });
