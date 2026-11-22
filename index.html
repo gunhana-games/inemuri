@@ -2,17 +2,17 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>睡眠学習</title>
+<meta name="viewport" id="vp" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>うとうと学園</title>
 <!-- 検索やSNSで表示される説明・カード画像（公開先：https://gunhana-games.github.io/inemuri/） -->
 <meta name="description" content="授業中、先生にバレずに居眠りしろ。長押しで目を閉じると眠気が下がる。でも先生に見られたらアウト。時間割は終わらない。ブラウザで遊べる無料ゲーム。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="睡眠学習">
+<meta property="og:title" content="うとうと学園">
 <meta property="og:description" content="先生にバレずに、居眠りしろ。ブラウザで今すぐ遊べる無料ゲーム。">
 <meta property="og:url" content="https://gunhana-games.github.io/inemuri/">
 <meta property="og:image" content="https://gunhana-games.github.io/inemuri/ogp.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="睡眠学習">
+<meta name="twitter:title" content="うとうと学園">
 <meta name="twitter:description" content="先生にバレずに、居眠りしろ。">
 <meta name="twitter:image" content="https://gunhana-games.github.io/inemuri/ogp.png">
 <link rel="icon" type="image/png" href="icon.png">
@@ -446,10 +446,10 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=3"></script>
+<script src="scenes.js?v=4"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
-const TITLE = '睡眠学習';
+const TITLE = 'うとうと学園';
 // 公開したらURLを入れる（空のときは今のページのURLを使う）
 const SITE_URL = 'https://gunhana-games.github.io/inemuri/';
 
@@ -489,6 +489,8 @@ const P = {
   napGroggySec: 12,       // 机で寝たあと、寝起きでぼんやりする時間（秒）
   napGroggyMul: 2,        // ぼんやりしている間、眠気が何倍の速さでたまるか
   eventRate: 0.6,         // 2限から毎時限1つ起きるイベントのうち、ピンチ・チャンスの割合（残りはにぎやかし）
+  bannerMs: 2400,         // 授業の始めなどの大きな文字を出しておく時間（ミリ秒）
+  bannerLongMs: 4200,     // 先生の紹介（今日の先生：○○）がついているときの時間（ミリ秒）
   eventTagSec: 3.2,       // 「ピンチ！」「チャンス！」の合図を出しておく最低の時間（秒）
   eventWarnSec: 1.5,      // 小テスト・スマホのイベントで、先生が振り向く前の予兆の長さ（秒）
   tipSec: 3.2,            // 初めてのヒントを出しておく時間（秒）
@@ -1076,6 +1078,17 @@ el('nameInput').addEventListener('compositionstart', () => { nameComposing = tru
 el('nameInput').addEventListener('compositionend', (e) => { nameComposing = false; e.target.value = cutName(e.target.value); });
 el('nameInput').addEventListener('input', (e) => { if (!nameComposing && [...e.target.value].length > NAME_MAX) e.target.value = cutName(e.target.value); });
 const lidTop = el('lidTop'), lidBot = el('lidBot'), blur = el('blur');
+// iPhone：2本指の拡大（ピンチ）とダブルタップの拡大を止める。名前の入力のあとは、ずれた画面を元に戻す
+['gesturestart', 'gesturechange'].forEach((t) => document.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+function resetZoom() {
+  const vp = document.getElementById('vp');
+  const c = vp.getAttribute('content');
+  vp.setAttribute('content', c + ', minimum-scale=1');   // 一瞬書きかえると、拡大が元に戻る
+  setTimeout(() => vp.setAttribute('content', c), 50);
+  window.scrollTo(0, 0);
+}
+el('nameInput').addEventListener('blur', resetZoom);
 
 function posInDay(p) { return ((p - 1) % 24) + 1; }
 function dayOf(p) { return Math.floor((p - 1) / 24) + 1; }
@@ -1257,9 +1270,9 @@ function setupPeriod() {
     S.eventAt = -1; S.evQ = [];
     S.calls = makeCalls(lessonLen()).filter((c) => c < P.bossEndAt - 5);
     bossEntrance();
-    showBanner('！ 学年主任の授業 ！', ttype().desc, `${S.period}限　${sub}`);
+    showBanner('！ 学年主任の授業 ！', ttype().desc, `${S.period}時間目　${sub}`);
   }
-  if (!boss) showBanner(`${S.period}限　${sub}`, `${room !== 'classroom' ? ROOM_NAMES[room] + '・' : ''}${ph.name}・${lvName}`, `今日の先生：${ttype().name}${ttype().desc ? '（' + ttype().desc + '）' : ''}`);
+  if (!boss) showBanner(`${S.period}時間目　${sub}`, `${room !== 'classroom' ? ROOM_NAMES[room] + '・' : ''}${ph.name}・${lvName}`, `今日の先生：${ttype().name}${ttype().desc ? '（' + ttype().desc + '）' : ''}`);
 }
 // ===== 左上の時間割表 =====
 // 今の時限をふくむ6時限分（1〜6限、7〜12限…）を並べる。今の時限は色つき＋先生のクセ＋残り時間のバー、
@@ -1268,7 +1281,7 @@ function renderTimetable(inBreak = false) {
   const p = Math.max(1, S.period || 1);
   const first = p - ((posInDay(p) - 1) % 6);
   const ph = phaseOf(p);
-  el('ttTitle').textContent = `${dayOf(p) > 1 ? dayOf(p) + '日目 ' : ''}時間割 ${first}〜${first + 5}限`;
+  el('ttTitle').textContent = `${dayOf(p) > 1 ? dayOf(p) + '日目 ' : ''}時間割 ${first}〜${first + 5}時間目`;
   el('pPhase').textContent = ph.name;
   el('pPhase').className = ph.key;
   let html = '';
@@ -1309,7 +1322,7 @@ function showBanner(t, sub, sub2) {
   b.innerHTML = `${esc(t)}<small>${esc(sub || '')}</small>${sub2 ? `<small class="b2">${esc(sub2)}</small>` : ''}`;
   b.classList.add('on');
   clearTimeout(showBanner.t);
-  showBanner.t = setTimeout(() => b.classList.remove('on'), sub2 ? 2400 : 1600);
+  showBanner.t = setTimeout(() => b.classList.remove('on'), sub2 ? P.bannerLongMs : P.bannerMs);   // 先生の紹介つきは長めに
 }
 // 先生の吹き出し。目を閉じているほど、文字が虫食いになってにじむ
 function say(text, speaker, garble = false) {
@@ -2957,7 +2970,7 @@ function buildDevPanel() {
     <label for="dPick">休み時間に必ず出す</label><select id="dPick">${opt([['', 'ランダム']].concat(BREAK_ACTIONS.map((a) => [a.id, a.name + (a.when ? '（' + ({ lunch: '昼休み', day: '朝〜昼', evening: '補習', night: '夜', midnight: '真夜中', dawn: '夜明け' })[a.when] + '）' : '')])), DEV.breakPick)}</select>
     <label for="dGod">無敵（アウトにならない）</label><input id="dGod" type="checkbox"${DEV.god ? ' checked' : ''}>`;
   box.classList.remove('hidden');
-  el('titleRecord').textContent = '時間帯：1〜6限 朝〜昼／7〜9限 補習／10〜15限 夜／16〜21限 真夜中／22〜24限 夜明け（6限ごとに学年主任）';
+  el('titleRecord').textContent = '時間帯：1〜6時間目 朝〜昼／7〜9 補習／10〜15 夜／16〜21 真夜中／22〜24 夜明け（6時間目ごとに学年主任）';
 }
 function readDevPanel() {
   DEV.start = Math.max(1, Math.min(72, Math.floor(Number(el('dStart').value) || 1)));
@@ -3019,12 +3032,12 @@ function gameOver(kind, causeText, who) {
   const prev = Number(store('inemuri-best') || 0);
   if (reached > prev && !DEV.on) store('inemuri-best', String(reached));   // 開発者メニューで遊んだ分は記録しない
   const ph = phaseOf(reached);
-  el('endScore').innerHTML = `${reached}限<small>（${esc(S.subject)}）${sec}秒でアウト</small>`;
+  el('endScore').innerHTML = `${reached}時間目<small>（${esc(S.subject)}）${sec}秒でアウト</small>`;
   el('endSub').textContent = (dayOf(reached) > 1 ? `${dayOf(reached)}日目・` : '') + ph.name;
   el('endCause').textContent = '死因：' + cause;
   el('endSleep').textContent = `起きていた時間 ${fmtTime(S.awakeTime)}${S.bestCombo > 1 ? `（セーフ最高 ×${S.bestCombo}）` : ''}`;
   el('endRank').textContent = '称号：' + rankOf(reached);
-  el('endBest').textContent = reached > prev && prev ? '自己ベスト更新！' : prev ? `自己ベスト ${Math.max(prev, reached)}限` : '';
+  el('endBest').textContent = reached > prev && prev ? '自己ベスト更新！' : prev ? `自己ベスト ${Math.max(prev, reached)}時間目` : '';
   S.result = { reached, cause, rank: rankOf(reached), sub: S.subject, sleep: fmtTime(S.sleepTime), sleepSec: S.sleepTime, awake: fmtTime(S.awakeTime), awakeSec: S.awakeTime,
     bestCombo: S.bestCombo, correct: S.correct, answered: S.answered, name: playerName, catcher: kind === 'sleep' ? '' : (who || speakerName()),
     kind, plays: DEV.on ? plays + 1 : plays, safeAll: S.safeAll, turns: S.turns, called: S.called, tests: S.tests, testPerfect: S.testPerfect, nurse: S.nurse, coffee: S.coffee,
@@ -3069,7 +3082,7 @@ function reportData(r) {
 }
 function shareText() {
   const r = S.result;
-  return `【${TITLE}】${r.reached}限（${r.sub}）でアウト\n起きていた時間：${r.awake}\n死因：${r.cause}\n称号：${r.rank}\n#${TITLE}`;
+  return `【${TITLE}】${r.reached}時間目（${r.sub}）でアウト\n起きていた時間：${r.awake}\n死因：${r.cause}\n称号：${r.rank}\n#${TITLE}`;
 }
 function shareUrl() { return SITE_URL || (location.protocol.startsWith('http') ? location.href.split(/[?#]/)[0] : ''); }
 // スマホで「画像つきの共有」ができるなら、結果の画像といっしょに共有する。できなければXの投稿画面を開く（文字だけ）
@@ -3092,7 +3105,7 @@ async function saveImage() {
   const blob = await resultBlob();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `suimin-gakushu-${S.result.reached}gen.png`;
+  a.download = `suimin-gakushu-${S.result.reached}jikanme.png`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
@@ -3208,7 +3221,7 @@ function drawResultCanvas() {
     const L = 70, R = W / 2 - 34;
     txt('通　知　表', L, 80, 44, { w: 900 });
     txt(`第${d.plays}学期`, R, 78, 24, { a: 'right', w: 900 });
-    txt('私立 睡眠学習高等学校', L, 118, 18);
+    txt('私立 うとうと学園高等学校', L, 118, 18);
     txt('氏名', R - 150, 118, 18);
     txt(d.name, R, 120, 30, { a: 'right', w: 900 });
     line(L, 132, R, 132, 3);
@@ -3230,7 +3243,7 @@ function drawResultCanvas() {
     const ay = gy + ch * 2 + 34;
     heading('居眠りの記録', L, ay);
     const rc = d.record;
-    const cols = [['授業時数', `${rc.periods}限`], ['起きていた時間', rc.awake], ['セーフ', `${rc.safeAll}回`], ['セーフ最高', `×${rc.safe}`],
+    const cols = [['授業時数', `${rc.periods}時間`], ['起きていた時間', rc.awake], ['セーフ', `${rc.safeAll}回`], ['セーフ最高', `×${rc.safe}`],
                   ['振り向かれた', `${rc.turns}回`], ['当てられた', `${rc.called}回`], ['正解', `${rc.correct}問`], ['小テスト', `${rc.test}回`]];
     const per = 4, acw = (R - L) / per, ach = 46;
     cols.forEach(([k, v], i) => {
@@ -3293,6 +3306,7 @@ function drawResultCanvas() {
 
 function start() {
   audio();
+  resetZoom();
   if (DEV.on) readDevPanel();   // 開発者メニューの設定を、S を作る前に読む（始める時限など）
   playerName = cutName((el('nameInput').value || '').trim()) || '山田';   // 念のため、始めるときにも6文字で切る
   store('inemuri-name', playerName);
