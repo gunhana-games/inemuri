@@ -434,7 +434,7 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=1"></script>
+<script src="scenes.js?v=2"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
 const TITLE = '睡眠学習';
@@ -1491,8 +1491,27 @@ function qLab() {
   S.lastLabKind = lab;
   return { kind: 'lab', lab, sub: '理科', prompt: '' };
 }
+// 1限（easyPeriods）は、いちばんやさしい問題だけ。写真・聞いていたか・実験の問題は出さない
+function easyQuestion() {
+  const sub = S.subject;
+  if (sub === '数学') {
+    const add = Math.random() < 0.5;
+    const a = add ? randInt(1, 9) : randInt(5, 9), b = add ? randInt(1, 9) : randInt(1, a - 1);
+    const ans = add ? a + b : a - b, prompt = `${a} ${add ? '+' : '−'} ${b} = ?`;
+    return choiceQ('数学', prompt, String(ans), [ans + 1, ans - 1, ans + 2].map(String), (t) => `${prompt.replace(' = ?', '')} を「${t}」と答えた`);
+  }
+  if (sub === '英語') {
+    const [w, ans] = pickFresh(ENGLISH_EASY, 'enE:');
+    const wr = ENGLISH_EASY.filter((e) => e[0] !== w).map((e) => e[1]);
+    return choiceQ('英語', `「${w}」の意味は？`, ans, shuffle(wr).slice(0, 4), (t) => `「${w}」を「${t}」と訳した`);
+  }
+  if (sub === '音楽') return qMusic();
+  const it = pickFresh(QUIZ_EASY[sub], sub + 'E:');
+  return choiceQ(sub, it.q, it.a, it.w, it.c);
+}
 function makeQuestion(noBeaker) {
   const sub = S.subject;
+  if (S.period <= P.easyPeriods && !S.test) return easyQuestion();
   if (S.facts.length && Math.random() < 0.3) return qListen();
   const kind = SUBJECTS[sub].quiz;
   if (kind === 'math') return qMath();
