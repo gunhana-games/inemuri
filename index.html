@@ -2414,7 +2414,7 @@ function updateCupBtn() {
   const b = el('cupBtn');
   b.querySelector('b').textContent = S.cups || 0;
   b.classList.toggle('empty', !S.cups);
-  b.classList.toggle('show', (S.cups || 0) > 0 || S.drinking != null);
+  b.classList.toggle('show', ((S.cups || 0) > 0 || S.drinking != null) && (mode === 'play' || mode === 'call'));   // 授業中だけ出す
 }
 function swallowGum() {
   S.gum = false;
@@ -2913,7 +2913,7 @@ function render() {
   el('zzzCombo').textContent = S.combo > 1 ? `セーフ連続 ×${S.combo}` : '';
   el('eyeLid').style.height = (S.sleep * 0.85) + '%';
   el('gumTag').style.display = S.gum && (mode === 'play' || mode === 'call') ? '' : 'none';
-  if (S.cups !== render.cups || (S.drinking != null) !== render.drk) { render.cups = S.cups; render.drk = S.drinking != null; updateCupBtn(); }
+  if (S.cups !== render.cups || (S.drinking != null) !== render.drk || mode !== render.cupMode) { render.cups = S.cups; render.drk = S.drinking != null; render.cupMode = mode; updateCupBtn(); }
   el('sleepBox').classList.toggle('danger', S.sleep >= P.dangerAt);
   const tf = el('pTimeFill'); if (tf) tf.style.width = Math.max(0, 100 - S.lessonT / lessonLen() * 100) + '%';
   if (S.period) {
@@ -3221,7 +3221,7 @@ function drawResultCanvas() {
     const L = 70, R = W / 2 - 34;
     txt('通　知　表', L, 80, 44, { w: 900 });
     txt(`第${d.plays}学期`, R, 78, 24, { a: 'right', w: 900 });
-    txt('私立 うとうと学園高等学校', L, 118, 18);
+    txt(`私立 ${TITLE}`, L, 118, 18);   // 学校名＝タイトル（タイトルを変えると自動で変わる）
     txt('氏名', R - 150, 118, 18);
     txt(d.name, R, 120, 30, { a: 'right', w: 900 });
     line(L, 132, R, 132, 3);
