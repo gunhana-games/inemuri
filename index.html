@@ -160,7 +160,7 @@
   #safe { position: absolute; left: 50%; top: 34%; z-index: 7; pointer-events: none; transform: translate(-50%, 0) scale(.6); opacity: 0; color: #ffd75e; font-size: 46px; font-weight: 900; text-align: center; -webkit-text-stroke: 2px #222; text-shadow: 0 4px 0 #222; }
   #safe span { font-size: 30px; margin-left: 6px; color: #fff; }
   #safe small { display: block; font-size: 16px; color: #fff; -webkit-text-stroke: 0; text-shadow: 0 2px 4px #000; }
-  #safe.on { animation: safePop 1.2s ease-out forwards; }
+  #safe.on { animation: safePop 1.8s ease-out forwards; }
   @keyframes safePop { 0% { opacity: 0; transform: translate(-50%, 0) scale(.5); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 30% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -20px) scale(1); } }
   /* チョークが飛んでくる */
   #chalkFly { position: absolute; left: 40%; top: 30%; width: 34px; height: 9px; border-radius: 3px; background: #fff; box-shadow: 0 0 0 2px #bbb; z-index: 7; pointer-events: none; opacity: 0; }
@@ -452,7 +452,7 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=5"></script>
+<script src="scenes.js?v=6"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
 const TITLE = 'うとうと学園';
@@ -502,8 +502,7 @@ const P = {
   eventWarnSec: 1.5,      // 小テスト・スマホのイベントで、先生が振り向く前の予兆の長さ（秒）
   tipSec: 3.2,            // 初めてのヒントを出しておく時間（秒）
   safeWindow: 0.6,        // 先生が振り向く何秒前までに目を開けたら「セーフ！」か
-  safeBonus: 3,           // セーフ1回のボーナス（起きていた時間に足す秒）。連続するほど増える（最大5倍）
-  bossRewardSec: 45,      // 学年主任の授業を乗り切ったときのボーナス（起きていた時間に足す秒）
+  safeWake: 3, safeWakeMax: 8,   // セーフで下がる眠気（1回目3、連続するたび+1、最大8）
   bossRewardSleep: 40,    // 学年主任の授業を乗り切ったときに下がる眠気
   bossTimeMul: 1.5,       // 学年主任の授業の長さ（ふつうの授業の何倍か）
   bossPatrolAt: [25, 48], // 学年主任が見回りに来る時刻（授業の何秒目から。先生が黒板を向いているときに始まる）
@@ -1124,16 +1123,16 @@ function checkSafe() {
     S.combo++; S.safeAll++;
     S.bestCombo = Math.max(S.bestCombo, S.combo);
     if (S.combo >= 5) award(5);
-    const bonus = P.safeBonus * Math.min(S.combo, 5);
-    S.awakeTime += bonus;
+    const wake = Math.min(P.safeWakeMax, P.safeWake + (S.combo - 1));   // 連続するほど、少し多く下がる
+    S.sleep = Math.max(0, S.sleep - wake);
     sfxSafe(S.combo);
-    showSafe(S.combo, bonus);
+    showSafe(S.combo, wake);
     tip('safe');
   } else if (S.t - S.lastOpenAt > P.safeWindow) S.combo = 0;   // 余裕をもって起きていたら、連続は途切れる
 }
-function showSafe(combo, bonus) {
+function showSafe(combo, wake) {
   const b = el('safe');
-  b.innerHTML = `セーフ！${combo > 1 ? `<span>×${combo}</span>` : ''}<small>起きていた時間 +${bonus}秒</small>`;
+  b.innerHTML = `セーフ！${combo > 1 ? `<span>×${combo}</span>` : ''}<small>ドキッとして眠気 −${wake}</small>`;
   b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
   S.safeTimer = 1.2;
 }
@@ -1185,7 +1184,7 @@ function tip(key) {
   t.textContent = TIPS[key];
   t.classList.toggle('up', ['quiz', 'breakPanel', 'mini'].some((k) => !el(k).classList.contains('hidden')) || mode === 'quiz' || mode === 'break');
   t.classList.remove('on'); void t.offsetWidth; t.classList.add('on');
-  S.tipTimer = P.tipSec;
+  S.tipTimer = Math.max(P.tipSec, readSec(TIPS[key]) + 0.5);
 }
 function fmtTime(sec) { const s = Math.floor(sec); return `${Math.floor(s / 60)}分${String(s % 60).padStart(2, '0')}秒`; }
 // 目を開けているとき、1秒にたまる眠気
@@ -1232,7 +1231,7 @@ function setupPeriod() {
   if (DEV.event.startsWith('chat:')) S.chatterAt = DEV.eventAt;
   // 1時間目は1つ、2〜7時間目は2つ、そのあと eventsGrowEvery 時間ごとに1つ増える（最大 eventsMax）
   // 1つずつ、ピンチ・チャンス（eventRate）か、にぎやかし（残り）
-  S.evQ = [];
+  S.evQ = []; S.usedEv = new Set();
   if (!DEV.event) {
     const n = S.period === 1 ? 1 : Math.min(P.eventsMax, 2 + Math.floor((S.period - 2) / P.eventsGrowEvery));
     for (let i = 0; i < n; i++) {
@@ -1343,15 +1342,17 @@ function showBanner(t, sub, sub2) {
   b.innerHTML = `${esc(t)}<small>${esc(sub || '')}</small>${sub2 ? `<small class="b2">${esc(sub2)}</small>` : ''}`;
   b.classList.add('on');
   clearTimeout(showBanner.t);
-  showBanner.t = setTimeout(() => b.classList.remove('on'), sub2 ? P.bannerLongMs : P.bannerMs);   // 先生の紹介つきは長めに
+  showBanner.t = setTimeout(() => b.classList.remove('on'), Math.max(sub2 ? P.bannerLongMs : P.bannerMs, readSec(t + (sub || '') + (sub2 || '')) * 1000));   // 先生の紹介つきは長めに
 }
 // 先生の吹き出し。目を閉じているほど、文字が虫食いになってにじむ
+// 人が読める時間（秒）：文字が多いほど長く
+function readSec(t) { return Math.min(7, 1.2 + [...String(t || '')].length * 0.1); }
 function say(text, speaker, garble = false) {
   el('bubbleWho').textContent = speaker || '';
   S.talk = { text, garble, ranks: [...text].map(() => Math.random()), maxLid: garble ? S.lid : 0 };
   drawBubble();
   el('bubble').classList.add('on');
-  S.bubbleTimer = 2.8;
+  S.bubbleTimer = Math.max(2.8, readSec(text));
 }
 function drawBubble() {
   const tk = S.talk; if (!tk) return;
@@ -1365,12 +1366,14 @@ function drawBubble() {
   if (r > 0.3) tip('garble');
 }
 function sayMe(text, sec = 1.6) {
+  sec = Math.max(sec, readSec(text));
   const b = el('me');
   b.textContent = text;
   b.classList.add('on');
   later(sec, () => b.classList.remove('on'));
 }
 function floatText(t, sec = 1.3) {
+  sec = Math.max(sec, readSec(t));
   const f = el('float'); f.textContent = t; f.classList.add('on');
   S.floatTimer = sec;
 }
@@ -1382,7 +1385,7 @@ function cue(t, sec = 0.9) {
   if (m) { c.innerHTML = `<span class="tag ${m[1] === 'ピンチ' ? 'pinch' : 'chance'}">${m[1]}！</span>${esc(t.slice(m[0].length))}`; sec = Math.max(sec, P.eventTagSec); }
   else c.textContent = t;
   c.classList.toggle('big', !m && [...t].length <= 5);
-  c.classList.add('on'); S.cueTimer = sec;
+  c.classList.add('on'); S.cueTimer = Math.max(sec, readSec(t));
 }
 
 // ===== 先生が話す（目を閉じていると、虫食いでしか聞こえない） =====
@@ -1726,21 +1729,27 @@ function finishQuiz(ok, cause, myLine) {
   // 抜き打ち小テスト中は、1問ずつ次へ進む
   if (S.test) {
     S.test.n++;
-    if (ok) { sfxOk(); showQResult(true, '正解！'); } else { sfxNg(); S.test.wrong++; S.test.cause = cause; showQResult(false, 'ちがう……'); }
-    later(1.0, () => {
+    if (ok) { sfxOk(); showQResult(true, '正解！'); }
+    else {
+      // 1問まちがえるごとに×1（×が3つになったら、そこで小テストもおしまい）
+      sfxNg(); S.test.wrong++;
+      S.misses++; S.lastCause = `抜き打ちテストで${cause}`; updateMisses();
+      showQResult(false, 'ちがう……', `×${S.misses}`);
+    }
+    later(1.2, () => {
       el('quiz').classList.add('hidden');
-      if (S.test.n < 3) { startQuiz(); return; }
+      if (S.test.n < 3 && S.misses < P.maxMiss) { startQuiz(); return; }
       const t = S.test; S.test = null;
-      if (t.wrong >= 2) {
-        S.misses++; S.lastCause = `抜き打ちテストで${t.wrong}問まちがえた（${t.cause}）`;
-        updateMisses(); teacher.setMood('angry'); turnHeads(true);
-        say(`${t.wrong}問もまちがえたのか……`, speakerName());
-      } else if (t.wrong === 0) {
-        S.sleep = Math.max(0, S.sleep - 20);
+      if (t.wrong === 0) {
+        // 満点：眠気が0になる
+        S.sleep = 0;
         S.testPerfect = true; award(7);
-        floatText('満点！ うれしくて目が覚めた');
+        floatText('満点！ うれしくて眠気が吹き飛んだ（眠気 0）', 2.4);
         say('おっ、満点だ。やるじゃないか', speakerName());
-      } else say('まあ、よしとしよう', speakerName());
+      } else if (S.misses < P.maxMiss) {
+        teacher.setMood('angry'); turnHeads(true);
+        say(t.wrong >= 2 ? `${t.wrong}問もまちがえたのか……` : 'まあ、よしとしよう', speakerName());
+      }
       backToLesson();
     });
     return;
@@ -1817,12 +1826,17 @@ const NEW_EVENTS = [
 const CHANCE_TYPES = new Set(['boardhint', 'mood', 'proxy', 'breeze', 'thunder', 'funny', 'video', 'broadcast', 'sneeze', 'phone']);
 // danger＝眠気が白い線（dangerAt）をこえているとき：少しだけチャンスが出やすい
 function pickEvent(ph, danger) {
-  if (danger && Math.random() < P.dangerChanceRate) {
-    const ch = NEW_EVENTS.filter((e) => CHANCE_TYPES.has(e.type) && (!e.ok || e.ok(ph))).map((e) => e.type).concat(ph.events.filter((t) => t === 'phone'));
-    return pick(ch);
-  }
-  if (Math.random() < P.oldEventShare) return pick(ph.events);
-  return pick(NEW_EVENTS.filter((e) => !e.ok || e.ok(ph))).type;
+  // この授業でまだ出ていないものから選ぶ。選んだ種類で出し切っていたら、ほかの種類のまだ出ていないものから
+  const okNew = NEW_EVENTS.filter((e) => !e.ok || e.ok(ph)).map((e) => e.type);
+  const old = [...new Set(ph.events)];
+  const all = [...new Set(old.concat(okNew))];
+  const fresh = (list) => list.filter((t) => !S.usedEv.has(t));
+  let pool;
+  if (danger && Math.random() < P.dangerChanceRate) pool = all.filter((t) => CHANCE_TYPES.has(t));
+  else pool = Math.random() < P.oldEventShare ? old : okNew;
+  const t = pick(fresh(pool).length ? fresh(pool) : fresh(all).length ? fresh(all) : all);
+  S.usedEv.add(t);
+  return t;
 }
 // 問題のピンチ・チャンスは「次の指名」に効くので、この授業にまだ指名が残っていなければ1つ足す
 function ensureCall() {
@@ -1835,7 +1849,9 @@ const PRINCIPAL_LOOK = PHASES.find((p) => p.key === 'midnight').teacher;
 // にぎやかし：ほとんど何も起きない。教室がにぎやかに見えるだけ
 function chatter(id) {
   const list = CHATTER.filter((x) => (x.needs !== 'students' || (S.phase.students !== 'none' && students.length)) && (!x.room || x.room === S.room));
-  const c = id ? CHATTER.find((x) => x.id === id) : pick(list);
+  const fresh = list.filter((x) => !S.usedEv.has('chat:' + x.id));   // この授業でまだ出ていないもの
+  const c = id ? CHATTER.find((x) => x.id === id) : pick(fresh.length ? fresh : list);
+  S.usedEv.add('chat:' + c.id);
   seeEvent('chat:' + c.id);   // 学校行事の図鑑
   CHATTER_FX[c.id]();
 }
@@ -2127,7 +2143,7 @@ function stepEvent(dt) {
       if (E.t > P.eventWarnSec) {
         E.stage = 'talk'; E.t = 0; turnTeacher(true); checkSafe();
         say('よし、抜き打ちテストだ！ 3問いくぞ', speakerName());
-        showBanner('抜き打ち小テスト', '3問中2問まちがえると×1');
+        showBanner('抜き打ち小テスト', '1問まちがえるごとに×1。満点なら眠気0');
       }
     } else if (E.stage === 'talk' && E.t > 1.4) { S.test = { n: 0, wrong: 0 }; S.tests++; S.event = null; startQuiz(); }
   } else if (E.type === 'flash') {
@@ -2818,8 +2834,8 @@ function endPeriod() {
   if (S.ttype === 'chalk' && !S.chalkUsed) award(4);    // チョーク投げ先生にチョークを投げられなかった
   // 学年主任の授業を乗り切ったごほうび
   if (S.ttype === 'boss') {
-    S.awakeTime += P.bossRewardSec; S.sleep = Math.max(0, S.sleep - P.bossRewardSleep);
-    later(0.3, () => floatText(`学年主任の授業を乗り切った！ 起きていた時間 +${P.bossRewardSec}秒`, 2.2));
+    S.sleep = Math.max(0, S.sleep - P.bossRewardSleep);
+    later(0.3, () => floatText(`学年主任の授業を乗り切った！ 眠気 −${P.bossRewardSleep}`, 2.4));
   }
   S.period++;
   mode = 'break';
@@ -3371,7 +3387,7 @@ function start() {
     safeAll: 0, turns: 0, called: 0, tests: 0, testPerfect: false, nurse: 0, coffee: 0, soldStreak: 0, lastSleepy: false, lessonTotal: 0,
     subj: {}, seenT: new Set(), got: new Set(), awardQ: [], awardBusy: false, seatZ: 0, boss: null, entry: null, camLiftTo: 0, forceWalk: false, standOK: false,
     double: false, hardQ: false, fastQ: false, preQ: null, forgive: false, proxy: false, warmT: 0, lullT: 0, chatterAt: -1,
-    notes: false, notedQ: false, miniPlays: {}, evQ: [], evSeen: new Set(), listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
+    notes: false, notedQ: false, miniPlays: {}, evQ: [], evSeen: new Set(), usedEv: new Set(), listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
   if (!DEV.on) { plays = Number(store('inemuri-plays') || 0) + 1; store('inemuri-plays', String(plays)); }   // 遊んだ回数＝通知表の「第○学期」
   ['bubble', 'me', 'float', 'cue'].forEach((k) => el(k).classList.remove('on'));
   ['quiz', 'breakPanel', 'startScreen', 'endScreen', 'pauseScreen'].forEach((k) => el(k).classList.add('hidden'));
