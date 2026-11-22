@@ -452,7 +452,7 @@
   <div class="shareNote" id="shareNote"></div>
 </div>
 
-<script src="scenes.js?v=6"></script>
+<script src="scenes.js?v=7"></script>
 <script>
 // ===== タイトル（仮）。ここを書き換えるだけで、タブの名前と最初の画面とシェア文が変わる =====
 const TITLE = 'うとうと学園';
@@ -2835,7 +2835,10 @@ function endPeriod() {
   // 学年主任の授業を乗り切ったごほうび
   if (S.ttype === 'boss') {
     S.sleep = Math.max(0, S.sleep - P.bossRewardSleep);
-    later(0.3, () => floatText(`学年主任の授業を乗り切った！ 眠気 −${P.bossRewardSleep}`, 2.4));
+    // まちがい（×）も1つ消える
+    const healed = S.misses > 0;
+    if (healed) { S.misses--; updateMisses(); }
+    later(0.3, () => floatText(`学年主任の授業を乗り切った！ 眠気 −${P.bossRewardSleep}${healed ? '・まちがい ×1つ消えた' : ''}`, 3));
   }
   S.period++;
   mode = 'break';

@@ -424,7 +424,7 @@ const TEACHER_TYPES = {
   fast: { name: 'せっかち先生', desc: 'すぐ振り向いて、すぐ戻る', boardMul: 0.7, faceMul: 0.55 },
   walker: { name: '歩き回る先生', desc: 'ときどき教室をぐるっと一周する。後ろで足音が止まったら注意', walkRate: 0.45 },
   chalk: { name: 'チョーク投げ先生', desc: '寝ているとチョークが飛んでくる（1回だけ許してくれる）' },
-  boss: { name: '学年主任', desc: '鬼の板書 → 見回り2回 → 最後に「起立！」。乗り切れば大きく回復', feint: 0.3, boardMul: 0.8 },
+  boss: { name: '学年主任', desc: '鬼の板書 → 見回り2回 → 最後に「起立！」。乗り切れば眠気が大きく下がり、×も1つ消える', feint: 0.3, boardMul: 0.8 },
 };
 const TEACHER_TYPE_POOL = ['normal', 'feint', 'fast', 'walker', 'chalk'];
 // 学年主任の見た目（こわそうな黒っぽいスーツとメガネ）
