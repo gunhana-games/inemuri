@@ -346,6 +346,14 @@
   #endScreen .card .cause { margin: 6px 0 4px; }
   .shareNote { font-size: 13px; line-height: 1.5; max-width: min(440px, 100%); }
   .shareNote:empty { display: none; }
+  .authorX { color: #fff; font-size: 14px; font-weight: bold; text-decoration: none; padding: 8px 18px; border: 2px solid rgba(255,255,255,.7); border-radius: 999px; background: rgba(0,0,0,.35); }
+  #shareModal { z-index: 10; background: rgba(10,8,6,.85); }
+  #sharePanel { width: min(420px, 100%); max-height: 100%; overflow-y: auto; background: #fbf7ea; color: #2a2520; border: 3px solid #222; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  #sharePanel img { width: 100%; height: auto; border-radius: 6px; border: 1px solid #cfc8b4; }
+  #sharePanel .links { display: flex; gap: 26px; }
+  #sharePanel .links button { background: none; border: none; border-bottom: 2px solid #2a2520; border-radius: 0; padding: 2px; font-size: 16px; color: #2a2520; }
+  #sharePanel #shareBtn { width: 100%; background: #000; color: #fff; border-color: #000; }
+  #sharePanel .shareNote { color: #2a2520; text-align: center; }
   @media (max-height: 700px) { #endScreen .card .sub2, #endScreen .card .best { display: none; } }
   .card { background: #fdfcf6; color: #222; border: 3px solid #222; border-radius: 18px; padding: 16px 22px; width: min(440px, 100%); box-shadow: 0 8px 0 rgba(0,0,0,.3); }
   .card .score { font-size: 40px; font-weight: bold; }
@@ -445,12 +453,22 @@
     <div class="best" id="endBest"></div>
   </div>
   <div class="btns">
-    <button id="shareBtn">画像付きでシェア</button>
-    <button id="saveImgBtn" class="sub">画像を保存</button>
-    <button id="copyImgBtn" class="sub">画像をコピー</button>
+    <button id="openShareBtn">結果をシェア</button>
     <button id="retryBtn" class="sub">もう一回</button>
   </div>
-  <div class="shareNote" id="shareNote"></div>
+  <a class="authorX" href="https://x.com/gunhana_games" target="_blank" rel="noopener">作者のX　@gunhana_games</a>
+</div>
+<div class="overlay ui hidden" id="shareModal">
+  <div id="sharePanel">
+    <img id="shareCardImg" alt="通知表">
+    <div class="links">
+      <button id="saveImgBtn">画像を保存</button>
+      <button id="copyImgBtn">画像をコピー</button>
+    </div>
+    <button id="shareBtn">Xで画像付きシェア</button>
+    <div class="shareNote" id="shareNote"></div>
+    <button id="closeShareBtn" class="sub">閉じる</button>
+  </div>
 </div>
 
 <script src="scenes.js?v=7"></script>
@@ -3421,7 +3439,7 @@ function start() {
     notes: false, notedQ: false, miniPlays: {}, evQ: [], evSeen: new Set(), usedEv: new Set(), listenBlock: -1, listenUsed: 0, listenQuota: 0, full: false, energy: false, energyDone: false, spooky: false, spookyAt: null, dropT: 0, gum: false, lastTap: 0, devLunch: false });
   if (!DEV.on) { plays = Number(store('inemuri-plays') || 0) + 1; store('inemuri-plays', String(plays)); }   // 遊んだ回数＝通知表の「第○学期」
   ['bubble', 'me', 'float', 'cue'].forEach((k) => el(k).classList.remove('on'));
-  ['quiz', 'breakPanel', 'startScreen', 'endScreen', 'pauseScreen'].forEach((k) => el(k).classList.add('hidden'));
+  ['quiz', 'breakPanel', 'startScreen', 'endScreen', 'pauseScreen', 'shareModal'].forEach((k) => el(k).classList.add('hidden'));
   el('dark').style.opacity = 0;
   el('hint').style.opacity = 1;
   updateMisses();
@@ -3443,6 +3461,10 @@ el('cupBtn').addEventListener('click', (e) => { e.stopPropagation(); drinkCoffee
 el('retryBtn').addEventListener('click', start);
 el('shareBtn').addEventListener('click', share);
 el('saveImgBtn').addEventListener('click', saveImage);
+el('openShareBtn').addEventListener('click', () => {
+  el('shareCardImg').src = el('endCard').src; el('shareNote').textContent = ''; el('shareModal').classList.remove('hidden');
+});
+el('closeShareBtn').addEventListener('click', () => el('shareModal').classList.add('hidden'));
 el('copyImgBtn').addEventListener('click', async () => {
   try {
     const blob = await resultBlob();
