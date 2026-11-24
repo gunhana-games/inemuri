@@ -340,7 +340,7 @@
   .overlay .nameNote { display: block; margin-top: 4px; font-size: 12px; opacity: .8; }
   .overlay input { font-family: inherit; font-size: 18px; padding: 8px 12px; border-radius: 10px; border: 3px solid #222; width: 9em; text-align: center; margin-top: 6px; }
   #endScreen { background: rgba(20,16,12,.55); justify-content: flex-end; padding-bottom: 24px; gap: 10px; overflow-y: auto; }
-  #endCard { display: block; width: min(560px, 100%); height: auto; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+  #endCard { display: block; width: min(560px, 100%); height: auto; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.5); -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto; touch-action: manipulation; }
   #endScreen .card { padding: 10px 18px; }
   #endScreen .card .score { font-size: 32px; }
   #endScreen .card .cause { margin: 6px 0 4px; }
@@ -445,8 +445,9 @@
     <div class="best" id="endBest"></div>
   </div>
   <div class="btns">
-    <button id="shareBtn">Xでシェア</button>
-    <button id="saveImgBtn" class="sub">通知表を保存</button>
+    <button id="shareBtn">画像付きでシェア</button>
+    <button id="saveImgBtn" class="sub">画像を保存</button>
+    <button id="copyImgBtn" class="sub">画像をコピー</button>
     <button id="retryBtn" class="sub">もう一回</button>
   </div>
   <div class="shareNote" id="shareNote"></div>
@@ -3153,6 +3154,8 @@ function shareUrl() { return SITE_URL || (location.protocol.startsWith('http') ?
 // Xの投稿画面には外から画像を渡せないので、その前に通知表の画像をコピーしておき、貼り付ければ画像も付くようにする
 async function share() {
   const url = shareUrl();
+  // スマホ：共有メニューから、画像つきでそのままXに送れる
+  if (await shareWithImage(shareText() + (url ? '\n' + url : ''))) return;
   const intent = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText()) + (url ? '&url=' + encodeURIComponent(url) : '');
   const w = window.open('', '_blank');   // 先に開いておく（あとで開くと、ポップアップとして止められることがある）
   let copied = false;
@@ -3164,7 +3167,32 @@ async function share() {
   el('shareNote').textContent = copied ? '通知表の画像をコピーしました。Xの投稿欄に貼り付けると、画像も付けられます。'
     : '画像も付けるときは「通知表を保存」で保存して、Xの投稿に付けてください。';
 }
+// スマホ：画像を大きく出して「長押しで保存」。パソコン：これまで通りファイルとして保存
+function showSaveViewer(src) {
+  const v = document.createElement('div');
+  v.className = 'ui';
+  v.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;color:#fff;font-size:16px;font-weight:bold;text-align:center;line-height:1.5;touch-action:manipulation;';
+  const t = document.createElement('div'); t.textContent = '画像を長押しして「画像を保存」を選んでください';
+  const img = document.createElement('img'); img.src = src; img.alt = '通知表';
+  img.style.cssText = 'width:min(560px,100%);max-height:70vh;object-fit:contain;border-radius:6px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-action:manipulation;';
+  const b = document.createElement('button'); b.textContent = 'とじる'; b.className = 'sub';
+  b.onclick = () => v.remove();
+  v.append(t, img, b); document.body.appendChild(v);
+}
+// スマホの共有メニューを画像つきで開く。開けたら true（キャンセルも true）、使えない端末は false
+async function shareWithImage(text) {
+  if (!window.matchMedia('(pointer: coarse)').matches || !navigator.canShare) return false;
+  try {
+    const blob = await resultBlob();
+    const file = new File([blob], 'suimin-gakushu.png', { type: 'image/png' });
+    if (!navigator.canShare({ files: [file] })) return false;
+    await navigator.share(text ? { files: [file], text } : { files: [file] });
+    return true;
+  } catch (e) { return e.name === 'AbortError'; }
+}
 async function saveImage() {
+  if (await shareWithImage('')) return;
+  if (window.matchMedia('(pointer: coarse)').matches && el('endCard').src) { showSaveViewer(el('endCard').src); return; }
   const blob = await resultBlob();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -3415,6 +3443,13 @@ el('cupBtn').addEventListener('click', (e) => { e.stopPropagation(); drinkCoffee
 el('retryBtn').addEventListener('click', start);
 el('shareBtn').addEventListener('click', share);
 el('saveImgBtn').addEventListener('click', saveImage);
+el('copyImgBtn').addEventListener('click', async () => {
+  try {
+    const blob = await resultBlob();
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    el('shareNote').textContent = '通知表の画像をコピーしました。貼り付けると使えます。';
+  } catch (e) { el('shareNote').textContent = 'コピーできませんでした。「画像を保存」を使ってください。'; }
+});
 
 // ===== 組み立て =====
 buildRoom('classroom');
